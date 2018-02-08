@@ -1,0 +1,7 @@
+wiki/
+*.exe
+go-wiki
+.idea/
+config.toml
+.DS_Store
+wwwroot/

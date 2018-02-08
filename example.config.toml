@@ -1,0 +1,20 @@
+# Example config showing the default values.
+
+# Set this to change what port the server binds to
+#Port = 8080
+
+# Set the ListenHost to change what host you want the server to listen on.
+# For example, setting it to 127.0.0.1 would make it accept only connections
+# from localhost, and 0.0.0.0 would accept all incoming connections.
+#ListenHost = "127.0.0.1"
+
+# The WikiDir is where your markdown files will be stored.
+#WikiDir = "./wiki/"
+
+# Enable ServeStatic to allow the server to serve static files...
+# (html, js, css, images, etc.)
+#ServeStatic = true
+
+# If you have ServeStatic enabled, this will be your static file server's
+# document root.
+#Webroot = "./wwwroot/"
