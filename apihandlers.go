@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
-	"github.com/russross/blackfriday"
+	bf "gopkg.in/russross/blackfriday.v2"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -37,7 +37,7 @@ func GetPageHandler(a *AppContext) (handler http.HandlerFunc) {
 
 		switch format[0] {
 		case "html":
-			page.Contents = string(blackfriday.MarkdownCommon([]byte(page.Contents)))
+			page.Contents = string(bf.Run([]byte(page.Contents)))
 		default:
 			// Do nothing
 		}

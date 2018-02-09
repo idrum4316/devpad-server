@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"github.com/BurntSushi/toml"
 	"os"
 )
@@ -53,8 +52,6 @@ func ParsePageFile(path string) (page *PageData, err error) {
 			contents = contents + scanner.Text() + "\n"
 		}
 	}
-
-	fmt.Println(header)
 
 	if _, err = toml.Decode(header, page); err != nil {
 		return
