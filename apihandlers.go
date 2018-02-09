@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/microcosm-cc/bluemonday"
 	bf "gopkg.in/russross/blackfriday.v2"
 	"io/ioutil"
 	"log"
@@ -37,7 +38,8 @@ func GetPageHandler(a *AppContext) (handler http.HandlerFunc) {
 
 		switch format[0] {
 		case "html":
-			page.Contents = string(bf.Run([]byte(page.Contents)))
+			unsafe := bf.Run(bf.Run([]byte(page.Contents)))
+			page.Contents = string(bluemonday.UGCPolicy().SanitizeBytes(unsafe))
 		default:
 			// Do nothing
 		}
