@@ -1,7 +1,8 @@
 wiki/
 *.exe
-go-wiki
+devpad-server
 .idea/
 config.toml
 .DS_Store
 wwwroot/
+search.index/

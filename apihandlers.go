@@ -117,7 +117,7 @@ func SearchHandler(a *AppContext) (handler http.HandlerFunc) {
 			searchQuery = queryString[0]
 		}
 
-		results, err := searchWiki(searchQuery, a.Config.WikiDir)
+		results, err := searchWiki(a, searchQuery)
 		if err != nil {
 			w.WriteHeader(500)
 			return

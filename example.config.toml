@@ -18,3 +18,11 @@
 # If you have ServeStatic enabled, this will be your static file server's
 # document root.
 #Webroot = "./wwwroot/"
+
+# Create the search index in memory? Setting to tru will use more memory, but
+# will have higher performance
+#IndexInMemory = false
+
+# If you choose not to hold the search index in memory, this is where the index
+# will reside on disk.
+#IndexFile = "./search.bleve"

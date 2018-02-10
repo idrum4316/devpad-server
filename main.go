@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 	"os"
 )
@@ -13,9 +14,14 @@ func main() {
 	// Load the configuration file
 	appContext := NewAppContext()
 	appContext.Config.LoadFromFile("config.toml")
+	err := initSearchIndex(appContext)
+	if err != nil {
+		log.Fatal(err)
+	}
+	go indexAll(appContext)
 
 	// Create the wiki directory if it doesn't exist
-	if _, err := os.Stat(appContext.Config.WikiDir); os.IsNotExist(err) {
+	if _, err = os.Stat(appContext.Config.WikiDir); os.IsNotExist(err) {
 		os.MkdirAll(appContext.Config.WikiDir, 0775)
 	}
 
@@ -39,7 +45,7 @@ func main() {
 	logged_router := handlers.LoggingHandler(os.Stdout, router)
 	host := appContext.Config.ListenHost
 	port := appContext.Config.Port
-	err := http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), logged_router)
+	err = http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), logged_router)
 	if err != nil {
 		fmt.Println(err)
 	}

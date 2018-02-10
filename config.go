@@ -5,20 +5,24 @@ import (
 )
 
 type AppConfig struct {
-	Port        int
-	ListenHost  string
-	WikiDir     string
-	ServeStatic bool
-	Webroot     string
+	Port          int
+	ListenHost    string
+	WikiDir       string
+	ServeStatic   bool
+	Webroot       string
+	IndexInMemory bool
+	IndexFile     string
 }
 
 func NewAppConfig() (c *AppConfig) {
 	c = &AppConfig{
-		Port:        8080,
-		ListenHost:  "127.0.0.1",
-		WikiDir:     "./wiki/",
-		ServeStatic: true,
-		Webroot:     "./wwwroot/",
+		Port:          8080,
+		ListenHost:    "127.0.0.1",
+		WikiDir:       "./wiki/",
+		ServeStatic:   true,
+		Webroot:       "./wwwroot/",
+		IndexInMemory: false,
+		IndexFile:     "./search.index",
 	}
 	return
 }
