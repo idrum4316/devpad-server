@@ -20,7 +20,7 @@ type searchResult struct {
 
 // Search all files in the wiki directory for the search term
 func searchWiki(c *AppContext, q string) (result *bleve.SearchResult, err error) {
-	query := bleve.NewMatchQuery(q)
+	query := bleve.NewQueryStringQuery(q)
 	search := bleve.NewSearchRequest(query)
 	search.Highlight = bleve.NewHighlight()
 	searchResults, err := c.SearchIndex.Search(search)

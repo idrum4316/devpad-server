@@ -6,16 +6,25 @@ import (
 	"os"
 )
 
-type PageData struct {
-	Title    string
+type PageHeader struct {
+	Title string
+	Tags  []string
+}
+
+type Page struct {
+	Header   PageHeader
 	Contents string
 }
 
 // ParseHeader parses the page header from the markdown, returning the markdown
 // without the header.
-func ParsePageFile(path string) (page *PageData, err error) {
+func ParsePageFile(path string) (page *Page, err error) {
 
-	page = &PageData{}
+	page = &Page{
+		Header: PageHeader{
+			Tags: []string{},
+		},
+	}
 
 	file, err := os.Open(path)
 	if err != nil {
@@ -28,7 +37,7 @@ func ParsePageFile(path string) (page *PageData, err error) {
 
 	scanner := bufio.NewScanner(file)
 	scanner.Scan()
-	if scanner.Text() == "<!-- TinyWiki Header" {
+	if scanner.Text() == "<!-- Devpad Header" {
 		for scanner.Scan() {
 			line := scanner.Text()
 			if line == "-->" {
@@ -53,7 +62,7 @@ func ParsePageFile(path string) (page *PageData, err error) {
 		}
 	}
 
-	if _, err = toml.Decode(header, page); err != nil {
+	if _, err = toml.Decode(header, &page.Header); err != nil {
 		return
 	}
 

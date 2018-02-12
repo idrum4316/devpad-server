@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/BurntSushi/toml"
 	"github.com/gorilla/mux"
 	"github.com/microcosm-cc/bluemonday"
 	bf "gopkg.in/russross/blackfriday.v2"
@@ -64,18 +66,20 @@ func PostPageHandler(a *AppContext) (handler http.HandlerFunc) {
 		path := a.Config.WikiDir + vars["slug"] + ".md"
 
 		decoder := json.NewDecoder(r.Body)
-		var d PageData
-		err := decoder.Decode(&d)
+		var p Page
+		err := decoder.Decode(&p)
 		if err != nil {
 			w.WriteHeader(400)
 			return
 		}
 
-		fileContents := fmt.Sprintf(`<!-- TinyWiki Header
-title = "%s"
--->
+		headerBuf := new(bytes.Buffer)
+		if err = toml.NewEncoder(headerBuf).Encode(p.Header); err != nil {
+			w.WriteHeader(400)
+			return
+		}
 
-%s`, d.Title, d.Contents)
+		fileContents := fmt.Sprintf("<!-- Devpad Header\n%s-->\n\n%s", headerBuf.String(), p.Contents)
 
 		err = ioutil.WriteFile(path, []byte(fileContents), 0644)
 		if err != nil {
