@@ -133,5 +133,13 @@ func updateSearchIndex(c *AppContext, e fsnotify.Event) {
 			log.Fatal(err)
 		}
 
+	case fsnotify.Rename:
+		if _, err := os.Stat(path.Join(c.Config.WikiDir, file)); os.IsNotExist(err) {
+			err := c.SearchIndex.Delete(strings.TrimSuffix(file, filepath.Ext(file)))
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+
 	}
 }

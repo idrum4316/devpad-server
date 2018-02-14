@@ -2,14 +2,17 @@ package main
 
 import (
 	"bufio"
-	"github.com/BurntSushi/toml"
 	"os"
+	"time"
+
+	"github.com/BurntSushi/toml"
 )
 
 type Page struct {
-	Title    string   `json:"title"`
-	Tags     []string `json:"tags"`
-	Contents string   `json:"contents"`
+	Title    string    `json:"title"`
+	Tags     []string  `json:"tags"`
+	Modified time.Time `json:"modified"`
+	Contents string    `json:"contents"`
 }
 
 type PageHeader struct {
@@ -51,6 +54,13 @@ func ParsePageFile(path string) (page *Page, err error) {
 		return
 	}
 	defer file.Close()
+
+	fileInfo, err := file.Stat()
+	if err != nil {
+		return
+	}
+
+	page.Modified = fileInfo.ModTime()
 
 	header := ""
 	contents := ""
