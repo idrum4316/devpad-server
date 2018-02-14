@@ -22,7 +22,7 @@ func NewAppConfig() (c *AppConfig) {
 		ServeStatic:   true,
 		Webroot:       "./wwwroot/",
 		IndexInMemory: false,
-		IndexFile:     "./search.index",
+		IndexFile:     "./pages.index",
 	}
 	return
 }

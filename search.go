@@ -18,21 +18,9 @@ type searchResult struct {
 	Occurrences int    `json:"count"`
 }
 
-// Search all files in the wiki directory for the search term
-func searchWiki(c *AppContext, q string) (result *bleve.SearchResult, err error) {
-	query := bleve.NewQueryStringQuery(q)
-	search := bleve.NewSearchRequest(query)
-	search.Highlight = bleve.NewHighlight()
-	searchResults, err := c.SearchIndex.Search(search)
-	if err != nil {
-		return nil, err
-	}
-	return searchResults, nil
-}
-
 // Initialize the search index
 func initSearchIndex(a *AppContext) error {
-	mapping := bleve.NewIndexMapping()
+	mapping := NewPageMapping()
 
 	if a.Config.IndexInMemory {
 		index, err := bleve.NewMemOnly(mapping)

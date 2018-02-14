@@ -6,25 +6,45 @@ import (
 	"os"
 )
 
-type PageHeader struct {
-	Title string
-	Tags  []string
+type Page struct {
+	Title    string   `json:"title"`
+	Tags     []string `json:"tags"`
+	Contents string   `json:"contents"`
 }
 
-type Page struct {
-	Header   PageHeader
-	Contents string
+type PageHeader struct {
+	Title string   `json:"title"`
+	Tags  []string `json:"tags"`
+}
+
+// NewPage generates a new empty page instance
+func NewPage() *Page {
+	return &Page{
+		Tags: []string{},
+	}
+}
+
+// Get just the page header
+func (p *Page) Header() *PageHeader {
+	return &PageHeader{
+		Title: p.Title,
+		Tags:  p.Tags,
+	}
+}
+
+// Expand a PageHeader to a Page with an empty 'Contents'
+func (h *PageHeader) ToPage() *Page {
+	return &Page{
+		Title: h.Title,
+		Tags:  h.Tags,
+	}
 }
 
 // ParseHeader parses the page header from the markdown, returning the markdown
 // without the header.
 func ParsePageFile(path string) (page *Page, err error) {
 
-	page = &Page{
-		Header: PageHeader{
-			Tags: []string{},
-		},
-	}
+	page = NewPage()
 
 	file, err := os.Open(path)
 	if err != nil {
@@ -62,7 +82,7 @@ func ParsePageFile(path string) (page *Page, err error) {
 		}
 	}
 
-	if _, err = toml.Decode(header, &page.Header); err != nil {
+	if _, err = toml.Decode(header, &page); err != nil {
 		return
 	}
 

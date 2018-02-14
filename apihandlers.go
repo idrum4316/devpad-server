@@ -4,14 +4,16 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/BurntSushi/toml"
-	"github.com/gorilla/mux"
-	"github.com/microcosm-cc/bluemonday"
-	bf "gopkg.in/russross/blackfriday.v2"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/BurntSushi/toml"
+	"github.com/blevesearch/bleve"
+	"github.com/gorilla/mux"
+	"github.com/microcosm-cc/bluemonday"
+	bf "gopkg.in/russross/blackfriday.v2"
 )
 
 // GetPageHandler returns the contents of a page - Markdown or HTML
@@ -74,7 +76,7 @@ func PostPageHandler(a *AppContext) (handler http.HandlerFunc) {
 		}
 
 		headerBuf := new(bytes.Buffer)
-		if err = toml.NewEncoder(headerBuf).Encode(p.Header); err != nil {
+		if err = toml.NewEncoder(headerBuf).Encode(p.Header()); err != nil {
 			w.WriteHeader(400)
 			return
 		}
@@ -121,13 +123,45 @@ func SearchHandler(a *AppContext) (handler http.HandlerFunc) {
 			searchQuery = queryString[0]
 		}
 
-		results, err := searchWiki(a, searchQuery)
+		query := bleve.NewQueryStringQuery(searchQuery)
+		search := bleve.NewSearchRequest(query)
+		search.Highlight = bleve.NewHighlight()
+		search.Size = 10000
+		searchResults, err := a.SearchIndex.Search(search)
 		if err != nil {
 			w.WriteHeader(500)
 			return
 		}
 
-		j, err := json.Marshal(results)
+		j, err := json.Marshal(searchResults)
+		if err != nil {
+			w.WriteHeader(500)
+			return
+		}
+		w.Write(j)
+
+	}
+	return
+}
+
+// Return the pages with a specific tag
+func TagHandler(a *AppContext) (handler http.HandlerFunc) {
+	handler = func(w http.ResponseWriter, r *http.Request) {
+
+		vars := mux.Vars(r)
+
+		query := bleve.NewQueryStringQuery(fmt.Sprintf("tags:\"%s\"", vars["tag"]))
+		search := bleve.NewSearchRequest(query)
+		search.Fields = []string{"title"}
+		search.Size = 10000
+		search.SortBy([]string{"title"})
+		searchResults, err := a.SearchIndex.Search(search)
+		if err != nil {
+			w.WriteHeader(500)
+			return
+		}
+
+		j, err := json.Marshal(searchResults)
 		if err != nil {
 			w.WriteHeader(500)
 			return
