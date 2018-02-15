@@ -24,13 +24,15 @@ func SearchHandler(a *AppContext) (handler http.HandlerFunc) {
 		search.Size = 10000
 		searchResults, err := a.SearchIndex.Search(search)
 		if err != nil {
-			w.WriteHeader(500)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(FormatError("Unable to process your search query."))
 			return
 		}
 
 		j, err := json.Marshal(searchResults)
 		if err != nil {
-			w.WriteHeader(500)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(FormatError("Unable to encode the response."))
 			return
 		}
 		w.Write(j)

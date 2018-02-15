@@ -22,13 +22,15 @@ func TagHandler(a *AppContext) (handler http.HandlerFunc) {
 		search.SortBy([]string{"title"})
 		searchResults, err := a.SearchIndex.Search(search)
 		if err != nil {
-			w.WriteHeader(500)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(FormatError("An error occurred while running the search."))
 			return
 		}
 
 		j, err := json.Marshal(searchResults)
 		if err != nil {
-			w.WriteHeader(500)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(FormatError("Unable to encode the response."))
 			return
 		}
 		w.Write(j)
