@@ -8,16 +8,12 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
+// Page represents a single Markdown file.
 type Page struct {
 	Title    string    `json:"title"`
 	Tags     []string  `json:"tags"`
 	Modified time.Time `json:"modified"`
 	Contents string    `json:"contents"`
-}
-
-type PageHeader struct {
-	Title string   `json:"title"`
-	Tags  []string `json:"tags"`
 }
 
 // NewPage generates a new empty page instance
@@ -27,7 +23,8 @@ func NewPage() *Page {
 	}
 }
 
-// Get just the page header
+// Header converts a Page to a PageHeader. Be aware that this process loses the
+// Contents and Modified data.
 func (p *Page) Header() *PageHeader {
 	return &PageHeader{
 		Title: p.Title,
@@ -35,17 +32,9 @@ func (p *Page) Header() *PageHeader {
 	}
 }
 
-// Expand a PageHeader to a Page with an empty 'Contents'
-func (h *PageHeader) ToPage() *Page {
-	return &Page{
-		Title: h.Title,
-		Tags:  h.Tags,
-	}
-}
-
-// ParseHeader parses the page header from the markdown, returning the markdown
+// NewPageFromFile parses the page from the markdown, returning the markdown
 // without the header.
-func ParsePageFile(path string) (page *Page, err error) {
+func NewPageFromFile(path string) (page *Page, err error) {
 
 	page = NewPage()
 
@@ -55,11 +44,11 @@ func ParsePageFile(path string) (page *Page, err error) {
 	}
 	defer file.Close()
 
+	// This is necessary to get the modification date
 	fileInfo, err := file.Stat()
 	if err != nil {
 		return
 	}
-
 	page.Modified = fileInfo.ModTime()
 
 	header := ""

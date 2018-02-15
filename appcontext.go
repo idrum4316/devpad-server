@@ -10,7 +10,7 @@ type AppContext struct {
 	SearchIndex bleve.Index
 }
 
-// Return a pointer to a new AppContext with default values set
+// NewAppContext returns a pointer to a new AppContext with default values set.
 func NewAppContext() (a *AppContext) {
 	a = &AppContext{
 		Config:      NewAppConfig(),

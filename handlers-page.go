@@ -5,12 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
+	"path"
 
 	"github.com/BurntSushi/toml"
-	"github.com/blevesearch/bleve"
 	"github.com/gorilla/mux"
 	"github.com/microcosm-cc/bluemonday"
 	bf "gopkg.in/russross/blackfriday.v2"
@@ -21,20 +20,23 @@ func GetPageHandler(a *AppContext) (handler http.HandlerFunc) {
 	handler = func(w http.ResponseWriter, r *http.Request) {
 
 		vars := mux.Vars(r)
-		path := a.Config.WikiDir + vars["slug"] + ".md"
+		path := fmt.Sprintf("%s.md", path.Join(a.Config.WikiDir, vars["slug"]))
 
 		if _, err := os.Stat(path); os.IsNotExist(err) {
-			w.WriteHeader(404)
+			w.WriteHeader(http.StatusNotFound)
+			w.Write(FormatError("The page you requested could not be found."))
 			return
 		}
 
-		page, err := ParsePageFile(path)
+		page, err := NewPageFromFile(path)
 		if err != nil {
-			w.WriteHeader(500)
-			log.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(FormatError("The server encountered an error trying to " +
+				"parse the requested file."))
 			return
 		}
 
+		// format should be "html" or "source"
 		format, ok := r.URL.Query()["format"]
 		if !ok || len(format) < 1 {
 			format = []string{"source"}
@@ -42,15 +44,21 @@ func GetPageHandler(a *AppContext) (handler http.HandlerFunc) {
 
 		switch format[0] {
 		case "html":
-			unsafe := bf.Run(bf.Run([]byte(page.Contents)))
+			unsafe := bf.Run([]byte(page.Contents))
 			page.Contents = string(bluemonday.UGCPolicy().SanitizeBytes(unsafe))
+		case "source":
+			// Don't render the Markdown
 		default:
-			// Do nothing
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(FormatError("Unknown value in 'format' parameter."))
+			return
 		}
 
 		j, err := json.Marshal(page)
 		if err != nil {
-			w.WriteHeader(500)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(FormatError("An error occurred occurred trying to format " +
+				"a response."))
 			return
 		}
 		w.Write(j)
@@ -107,66 +115,6 @@ func DeletePageHandler(a *AppContext) (handler http.HandlerFunc) {
 		}
 
 		return
-
-	}
-	return
-}
-
-// SearchHandler searches the wiki files for a search term
-func SearchHandler(a *AppContext) (handler http.HandlerFunc) {
-	handler = func(w http.ResponseWriter, r *http.Request) {
-
-		queryString := r.URL.Query()["q"]
-		searchQuery := ""
-
-		if len(queryString) > 0 {
-			searchQuery = queryString[0]
-		}
-
-		query := bleve.NewQueryStringQuery(searchQuery)
-		search := bleve.NewSearchRequest(query)
-		search.Highlight = bleve.NewHighlight()
-		search.Size = 10000
-		searchResults, err := a.SearchIndex.Search(search)
-		if err != nil {
-			w.WriteHeader(500)
-			return
-		}
-
-		j, err := json.Marshal(searchResults)
-		if err != nil {
-			w.WriteHeader(500)
-			return
-		}
-		w.Write(j)
-
-	}
-	return
-}
-
-// Return the pages with a specific tag
-func TagHandler(a *AppContext) (handler http.HandlerFunc) {
-	handler = func(w http.ResponseWriter, r *http.Request) {
-
-		vars := mux.Vars(r)
-
-		query := bleve.NewQueryStringQuery(fmt.Sprintf("tags:\"%s\"", vars["tag"]))
-		search := bleve.NewSearchRequest(query)
-		search.Fields = []string{"title"}
-		search.Size = 10000
-		search.SortBy([]string{"title"})
-		searchResults, err := a.SearchIndex.Search(search)
-		if err != nil {
-			w.WriteHeader(500)
-			return
-		}
-
-		j, err := json.Marshal(searchResults)
-		if err != nil {
-			w.WriteHeader(500)
-			return
-		}
-		w.Write(j)
 
 	}
 	return

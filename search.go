@@ -65,7 +65,7 @@ func indexAll(c *AppContext) {
 			continue
 		}
 
-		page, err := ParsePageFile(path.Join(c.Config.WikiDir, f.Name()))
+		page, err := NewPageFromFile(path.Join(c.Config.WikiDir, f.Name()))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -115,14 +115,14 @@ func updateSearchIndex(c *AppContext, e fsnotify.Event) {
 
 	switch e.Op {
 	case fsnotify.Write:
-		page, err := ParsePageFile(path.Join(c.Config.WikiDir, file))
+		page, err := NewPageFromFile(path.Join(c.Config.WikiDir, file))
 		if err != nil {
 			log.Fatal(err)
 		}
 		c.SearchIndex.Index(strings.TrimSuffix(file, filepath.Ext(file)), page)
 
 	case fsnotify.Create:
-		page, err := ParsePageFile(path.Join(c.Config.WikiDir, file))
+		page, err := NewPageFromFile(path.Join(c.Config.WikiDir, file))
 		if err != nil {
 			log.Fatal(err)
 		}
