@@ -57,12 +57,10 @@ func indexAll(c *AppContext) {
 
 	for _, f := range files {
 		if f.IsDir() {
-			// Skip directories
-			continue
+			continue // Skip directories
 		}
 		if !strings.HasSuffix(f.Name(), ".md") {
-			// Skip non markdown files
-			continue
+			continue // Skip non markdown files
 		}
 
 		page, err := NewPageFromFile(path.Join(c.Config.WikiDir, f.Name()))
@@ -113,7 +111,9 @@ func watchForChanges(c *AppContext) {
 func updateSearchIndex(c *AppContext, e fsnotify.Event) {
 	_, file := path.Split(e.Name)
 
+	// Handle each file event
 	switch e.Op {
+
 	case fsnotify.Write:
 		page, err := NewPageFromFile(path.Join(c.Config.WikiDir, file))
 		if err != nil {
@@ -143,4 +143,5 @@ func updateSearchIndex(c *AppContext, e fsnotify.Event) {
 		}
 
 	}
+
 }

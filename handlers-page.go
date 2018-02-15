@@ -49,7 +49,7 @@ func GetPageHandler(a *AppContext) (handler http.HandlerFunc) {
 		case "source":
 			// Don't render the Markdown
 		default:
-			w.WriteHeader(http.StatusInternalServerError)
+			w.WriteHeader(http.StatusBadRequest)
 			w.Write(FormatError("Unknown value in 'format' parameter."))
 			return
 		}
@@ -73,28 +73,31 @@ func PostPageHandler(a *AppContext) (handler http.HandlerFunc) {
 	handler = func(w http.ResponseWriter, r *http.Request) {
 
 		vars := mux.Vars(r)
-		path := a.Config.WikiDir + vars["slug"] + ".md"
+		path := fmt.Sprintf("%s.md", path.Join(a.Config.WikiDir, vars["slug"]))
 
 		decoder := json.NewDecoder(r.Body)
 		var p Page
 		err := decoder.Decode(&p)
 		if err != nil {
-			w.WriteHeader(400)
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(FormatError("Unable to decode JSON request."))
 			return
 		}
 
 		headerBuf := new(bytes.Buffer)
 		if err = toml.NewEncoder(headerBuf).Encode(p.Header()); err != nil {
-			w.WriteHeader(400)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(FormatError("Unable to encode page header."))
 			return
 		}
 
-		fileContents := fmt.Sprintf("<!-- Devpad Header\n%s-->\n\n%s", headerBuf.String(), p.Contents)
+		fileContents := fmt.Sprintf("<!-- Devpad Header\n%s-->\n\n%s",
+			headerBuf.String(), p.Contents)
 
 		err = ioutil.WriteFile(path, []byte(fileContents), 0644)
 		if err != nil {
-			fmt.Printf("Error Saving %s.\n", path)
-			w.WriteHeader(500)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(FormatError("Unable to write file to disk."))
 			return
 		}
 
@@ -110,7 +113,8 @@ func DeletePageHandler(a *AppContext) (handler http.HandlerFunc) {
 
 		err := os.Remove(path)
 		if err != nil {
-			w.WriteHeader(500)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(FormatError("Unable to delete file from disk."))
 			return
 		}
 
