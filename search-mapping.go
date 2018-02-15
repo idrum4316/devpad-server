@@ -18,8 +18,7 @@ func NewPageMapping() *mapping.IndexMappingImpl {
 	kwFieldMapping.Analyzer = "keyword"
 
 	pageMapping := bleve.NewDocumentMapping()
-	// pageMapping.AddFieldMappingsAt("title", enFieldMapping)
-	// pageMapping.AddFieldMappingsAt("contents", enFieldMapping)
+	pageMapping.AddFieldMappingsAt("contents", enFieldMapping)
 	pageMapping.AddFieldMappingsAt("tags", kwFieldMapping)
 
 	m := bleve.NewIndexMapping()

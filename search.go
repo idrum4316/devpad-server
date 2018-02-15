@@ -1,14 +1,15 @@
 package main
 
 import (
-	"github.com/blevesearch/bleve"
-	"github.com/fsnotify/fsnotify"
 	"io/ioutil"
 	"log"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
+
+	"github.com/blevesearch/bleve"
+	"github.com/fsnotify/fsnotify"
 )
 
 // A search result is an array of files along with the number of occurrences
