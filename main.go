@@ -10,6 +10,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
+var version string = "0.0.6"
+
 func main() {
 
 	// Load the configuration file
@@ -31,6 +33,7 @@ func main() {
 
 	// Handle the API calls
 	apiRouter := router.PathPrefix("/api").Subrouter()
+	apiRouter.HandleFunc("", APIInfoHandler(appContext)).Methods("GET")
 	apiRouter.HandleFunc("/pages/{slug}", GetPageHandler(appContext)).Methods("GET")
 	apiRouter.HandleFunc("/pages/{slug}", PostPageHandler(appContext)).Methods("POST")
 	apiRouter.HandleFunc("/pages/{slug}", DeletePageHandler(appContext)).Methods("DELETE")
