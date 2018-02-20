@@ -8,12 +8,74 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"strconv"
 
 	"github.com/BurntSushi/toml"
+	"github.com/blevesearch/bleve"
 	"github.com/gorilla/mux"
 	"github.com/microcosm-cc/bluemonday"
 	bf "gopkg.in/russross/blackfriday.v2"
 )
+
+// GetPagesHandler returns a list of all pages - with optional paging and
+// sorting
+func GetPagesHandler(a *AppContext) (handler http.HandlerFunc) {
+	handler = func(w http.ResponseWriter, r *http.Request) {
+
+		query := bleve.NewMatchAllQuery()
+		search := bleve.NewSearchRequest(query)
+		search.Fields = []string{"title", "tags", "modified"}
+
+		// Check for the 'size' parameter
+		size, ok := r.URL.Query()["size"]
+		if ok {
+			sizeInt, err := strconv.Atoi(size[0])
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write(FormatError("Unable to parse integer from 'size'" +
+					" option."))
+				return
+			}
+			search.Size = sizeInt
+		}
+
+		// Check for the 'from' parameter
+		from, ok := r.URL.Query()["from"]
+		if ok {
+			fromInt, err := strconv.Atoi(from[0])
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write(FormatError("Unable to parse integer from 'from'" +
+					" option."))
+				return
+			}
+			search.From = fromInt
+		}
+
+		// Check for the 'sort' parameter
+		sortOrder, ok := r.URL.Query()["sort"]
+		if ok {
+			search.SortBy(sortOrder)
+		}
+
+		searchResults, err := a.SearchIndex.Search(search)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(FormatError("Unable to process your search query."))
+			return
+		}
+
+		j, err := json.Marshal(searchResults)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(FormatError("Unable to encode the response."))
+			return
+		}
+		w.Write(j)
+
+	}
+	return
+}
 
 // GetPageHandler returns the contents of a page - Markdown or HTML
 func GetPageHandler(a *AppContext) (handler http.HandlerFunc) {
@@ -67,9 +129,9 @@ func GetPageHandler(a *AppContext) (handler http.HandlerFunc) {
 	return
 }
 
-// PostPageHandler updates the contents of a page - creating it if it doesn't
+// PutPageHandler updates the contents of a page - creating it if it doesn't
 // exist.
-func PostPageHandler(a *AppContext) (handler http.HandlerFunc) {
+func PutPageHandler(a *AppContext) (handler http.HandlerFunc) {
 	handler = func(w http.ResponseWriter, r *http.Request) {
 
 		vars := mux.Vars(r)

@@ -34,11 +34,13 @@ func main() {
 	// Handle the API calls
 	apiRouter := router.PathPrefix("/api").Subrouter()
 	apiRouter.HandleFunc("", APIInfoHandler(appContext)).Methods("GET")
+	apiRouter.HandleFunc("/pages", GetPagesHandler(appContext)).Methods("GET")
 	apiRouter.HandleFunc("/pages/{slug}", GetPageHandler(appContext)).Methods("GET")
-	apiRouter.HandleFunc("/pages/{slug}", PostPageHandler(appContext)).Methods("POST")
+	apiRouter.HandleFunc("/pages/{slug}", PutPageHandler(appContext)).Methods("PUT")
 	apiRouter.HandleFunc("/pages/{slug}", DeletePageHandler(appContext)).Methods("DELETE")
 	apiRouter.HandleFunc("/search", SearchHandler(appContext)).Methods("GET")
-	apiRouter.HandleFunc("/tags/{tag}", TagHandler(appContext)).Methods("GET")
+	apiRouter.HandleFunc("/tags", GetTagsHandler(appContext)).Methods("GET")
+	apiRouter.HandleFunc("/tags/{tag}", GetTagHandler(appContext)).Methods("GET")
 
 	// Serves static files
 	if appContext.Config.ServeStatic {
