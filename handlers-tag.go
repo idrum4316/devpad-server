@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/blevesearch/bleve"
 	"github.com/gorilla/mux"
@@ -12,11 +13,25 @@ import (
 // GetTagsHandler returns a list of all tags
 func GetTagsHandler(a *AppContext) (handler http.HandlerFunc) {
 	handler = func(w http.ResponseWriter, r *http.Request) {
+		numTags := 10000
+
+		// Check for the 'size' parameter
+		size, ok := r.URL.Query()["size"]
+		if ok {
+			sizeInt, err := strconv.Atoi(size[0])
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write(FormatError("Unable to parse integer from 'size'" +
+					" option."))
+				return
+			}
+			numTags = sizeInt
+		}
 
 		query := bleve.NewMatchAllQuery()
 		search := bleve.NewSearchRequest(query)
 		search.Size = 0
-		tagsFacet := bleve.NewFacetRequest("tags", 10000)
+		tagsFacet := bleve.NewFacetRequest("tags", numTags)
 		search.AddFacet("tags", tagsFacet)
 		searchResults, err := a.SearchIndex.Search(search)
 		if err != nil {
