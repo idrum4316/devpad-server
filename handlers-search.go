@@ -22,7 +22,7 @@ func SearchHandler(a *AppContext) (handler http.HandlerFunc) {
 		query := bleve.NewQueryStringQuery(searchQuery)
 		search := bleve.NewSearchRequest(query)
 		search.Highlight = bleve.NewHighlight()
-		search.Fields = []string{"title"}
+		search.Fields = []string{"title", "tags"}
 
 		// Check for the 'size' parameter
 		size, ok := r.URL.Query()["size"]
