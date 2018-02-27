@@ -30,19 +30,17 @@ func initSearchIndex(a *AppContext) error {
 		}
 		a.SearchIndex = index
 	} else {
-		if _, err := os.Stat(a.Config.IndexFile); err == nil {
-			index, err := bleve.Open(a.Config.IndexFile)
-			if err != nil {
-				log.Fatal(err)
-			}
-			a.SearchIndex = index
-		} else {
-			index, err := bleve.New(a.Config.IndexFile, mapping)
-			if err != nil {
-				log.Fatal(err)
-			}
-			a.SearchIndex = index
+
+		if a.Config.IndexLoc != "" {
+			os.RemoveAll(a.Config.IndexLoc)
 		}
+
+		index, err := bleve.New(a.Config.IndexLoc, mapping)
+		if err != nil {
+			log.Fatal(err)
+		}
+		a.SearchIndex = index
+
 	}
 
 	return nil

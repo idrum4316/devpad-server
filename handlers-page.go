@@ -146,17 +146,24 @@ func PutPageHandler(a *AppContext) (handler http.HandlerFunc) {
 			return
 		}
 
-		headerBuf := new(bytes.Buffer)
-		if err = toml.NewEncoder(headerBuf).Encode(p.Header()); err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(FormatError("Unable to encode page header."))
-			return
+		// Don't write the header if it's empty
+		if p.Header().IsBlank() {
+			err = ioutil.WriteFile(path, []byte(p.Contents), 0644)
+		} else {
+			headerBuf := new(bytes.Buffer)
+			if err = toml.NewEncoder(headerBuf).Encode(p.Header()); err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				w.Write(FormatError("Unable to encode page header."))
+				return
+			}
+
+			fileContents := fmt.Sprintf("<!-- Devpad Header\n%s-->\n\n%s",
+				headerBuf.String(), p.Contents)
+
+			err = ioutil.WriteFile(path, []byte(fileContents), 0644)
+
 		}
 
-		fileContents := fmt.Sprintf("<!-- Devpad Header\n%s-->\n\n%s",
-			headerBuf.String(), p.Contents)
-
-		err = ioutil.WriteFile(path, []byte(fileContents), 0644)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write(FormatError("Unable to write file to disk."))

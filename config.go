@@ -12,7 +12,7 @@ type AppConfig struct {
 	ServeStatic   bool
 	Webroot       string
 	IndexInMemory bool
-	IndexFile     string
+	IndexLoc      string
 }
 
 // NewAppConfig is a constructor that returns a new AppConfig instance with some
@@ -25,7 +25,7 @@ func NewAppConfig() (c *AppConfig) {
 		ServeStatic:   true,
 		Webroot:       "./wwwroot/",
 		IndexInMemory: false,
-		IndexFile:     "./pages.index",
+		IndexLoc:      "./pages.index",
 	}
 	return
 }

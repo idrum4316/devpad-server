@@ -14,3 +14,11 @@ func (h *PageHeader) ToPage() *Page {
 		Tags:  h.Tags,
 	}
 }
+
+// Returns a true if the page header is blank
+func (h *PageHeader) IsBlank() bool {
+	if h.Title == "" && len(h.Tags) == 0 {
+		return true
+	}
+	return false
+}

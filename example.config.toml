@@ -25,4 +25,4 @@
 
 # If you choose not to hold the search index in memory, this is where the index
 # will reside on disk.
-#IndexFile = "./pages.index"
+#IndexLoc = "./pages.index"
