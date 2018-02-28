@@ -104,9 +104,23 @@ func GetPageHandler(a *AppContext) (handler http.HandlerFunc) {
 			format = []string{"source"}
 		}
 
+		// toc should be "true" or "false"
+		toc, ok := r.URL.Query()["toc"]
+		if !ok || len(toc) < 1 {
+			toc = []string{"false"}
+		}
+
 		switch format[0] {
 		case "html":
-			unsafe := bf.Run([]byte(page.Contents))
+			renderer := bf.NewHTMLRenderer(bf.HTMLRendererParameters{
+				Flags: bf.CommonHTMLFlags,
+			})
+
+			if toc[0] == "true" {
+				renderer.Flags |= bf.TOC
+			}
+
+			unsafe := bf.Run([]byte(page.Contents), bf.WithRenderer(renderer))
 			page.Contents = string(bluemonday.UGCPolicy().SanitizeBytes(unsafe))
 		case "source":
 			// Don't render the Markdown

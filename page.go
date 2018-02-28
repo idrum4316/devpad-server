@@ -75,7 +75,7 @@ func NewPageFromFile(path string) (page *Page, err error) {
 			contents = contents + scanner.Text() + "\n"
 		}
 	} else {
-		contents = scanner.Text()
+		contents = scanner.Text() + "\n"
 		for scanner.Scan() {
 			contents = contents + scanner.Text() + "\n"
 		}
