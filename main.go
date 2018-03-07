@@ -44,8 +44,7 @@ func main() {
 
 	// Serves static files
 	if appContext.Config.ServeStatic {
-		webroot := appContext.Config.Webroot
-		router.PathPrefix("/").Handler(http.FileServer(http.Dir(webroot)))
+		router.PathPrefix("/").Handler(FileServer(appContext))
 	}
 
 	// Start the server

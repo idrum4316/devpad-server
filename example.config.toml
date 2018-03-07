@@ -26,3 +26,11 @@
 # If you choose not to hold the search index in memory, this is where the index
 # will reside on disk.
 #IndexLoc = "./pages.index"
+
+# In your static file server, if the static file doesn't exist, this file will
+# be served instead of a 404 response. This is handy for serving single page
+# apps. If you don't set a file name, the 404 response will be given. This path
+# should be relative to the webroot folder.
+#
+# This setting does nothing if ServeStatic is false.
+#DefaultFile = ""

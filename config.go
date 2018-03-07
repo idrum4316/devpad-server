@@ -13,6 +13,7 @@ type AppConfig struct {
 	Webroot       string
 	IndexInMemory bool
 	IndexLoc      string
+	DefaultFile   string
 }
 
 // NewAppConfig is a constructor that returns a new AppConfig instance with some
@@ -26,6 +27,7 @@ func NewAppConfig() (c *AppConfig) {
 		Webroot:       "./wwwroot/",
 		IndexInMemory: false,
 		IndexLoc:      "./pages.index",
+		DefaultFile:   "",
 	}
 	return
 }
