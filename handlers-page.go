@@ -11,6 +11,7 @@ import (
 	"strconv"
 
 	"github.com/BurntSushi/toml"
+	"github.com/Depado/bfchroma"
 	"github.com/blevesearch/bleve"
 	"github.com/gorilla/mux"
 	"github.com/microcosm-cc/bluemonday"
@@ -120,8 +121,18 @@ func GetPageHandler(a *AppContext) (handler http.HandlerFunc) {
 				renderer.Flags |= bf.TOC
 			}
 
-			unsafe := bf.Run([]byte(page.Contents), bf.WithRenderer(renderer))
-			page.Contents = string(bluemonday.UGCPolicy().SanitizeBytes(unsafe))
+			if a.Config.SanitizeHTML {
+				unsafe := bf.Run([]byte(page.Contents), bf.WithRenderer(renderer))
+				page.Contents = string(bluemonday.UGCPolicy().SanitizeBytes(unsafe))
+			} else {
+				r := bfchroma.NewRenderer(
+					bfchroma.Extend(renderer),
+					bfchroma.WithoutAutodetect(),
+					bfchroma.Style("tango"),
+				)
+				page.Contents = string(bf.Run([]byte(page.Contents), bf.WithRenderer(r)))
+			}
+
 		case "source":
 			// Don't render the Markdown
 		default:

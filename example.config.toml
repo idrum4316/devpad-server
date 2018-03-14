@@ -34,3 +34,7 @@
 #
 # This setting does nothing if ServeStatic is false.
 #DefaultFile = ""
+
+# Sanitize the HTML output when rendering markdown files? If enabled, you will
+# not get syntax highlighting in code blocks.
+#SanitizeHTML = true

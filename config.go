@@ -14,6 +14,7 @@ type AppConfig struct {
 	IndexInMemory bool
 	IndexLoc      string
 	DefaultFile   string
+	SanitizeHTML  bool
 }
 
 // NewAppConfig is a constructor that returns a new AppConfig instance with some
@@ -28,6 +29,7 @@ func NewAppConfig() (c *AppConfig) {
 		IndexInMemory: false,
 		IndexLoc:      "./pages.index",
 		DefaultFile:   "",
+		SanitizeHTML:  true,
 	}
 	return
 }
