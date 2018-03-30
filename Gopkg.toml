@@ -31,7 +31,7 @@
 
 [[constraint]]
   name = "github.com/Depado/bfchroma"
-  version = "1.0.0"
+  branch = "master"
 
 [[constraint]]
   name = "github.com/blevesearch/bleve"

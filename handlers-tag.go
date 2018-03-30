@@ -52,7 +52,7 @@ func GetTagsHandler(a *AppContext) (handler http.HandlerFunc) {
 	return
 }
 
-// Return the pages with a specific tag
+// GetTagHandler returns the pages with a specific tag
 func GetTagHandler(a *AppContext) (handler http.HandlerFunc) {
 	handler = func(w http.ResponseWriter, r *http.Request) {
 

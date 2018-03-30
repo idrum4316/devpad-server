@@ -7,7 +7,7 @@ type PageHeader struct {
 	Tags  []string `json:"tags"`
 }
 
-// Expand a PageHeader to a Page
+// ToPage expands a PageHeader to a Page
 func (h *PageHeader) ToPage() *Page {
 	return &Page{
 		Title: h.Title,
@@ -15,7 +15,7 @@ func (h *PageHeader) ToPage() *Page {
 	}
 }
 
-// Returns a true if the page header is blank
+// IsBlank returns a true if the page header is blank
 func (h *PageHeader) IsBlank() bool {
 	if h.Title == "" && len(h.Tags) == 0 {
 		return true

@@ -10,7 +10,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var version string = "0.0.6"
+var version = "0.0.6"
 
 func main() {
 
@@ -48,10 +48,10 @@ func main() {
 	}
 
 	// Start the server
-	logged_router := handlers.LoggingHandler(os.Stdout, router)
+	loggedRouter := handlers.LoggingHandler(os.Stdout, router)
 	host := appContext.Config.ListenHost
 	port := appContext.Config.Port
-	err = http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), logged_router)
+	err = http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), loggedRouter)
 	if err != nil {
 		fmt.Println(err)
 	}

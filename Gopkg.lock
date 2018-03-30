@@ -8,10 +8,10 @@
   version = "v0.3.0"
 
 [[projects]]
+  branch = "master"
   name = "github.com/Depado/bfchroma"
   packages = ["."]
-  revision = "7130586113d8f0b1dff95f1d3ff2c94cc50efdb8"
-  version = "v1.0.0"
+  revision = "8c923959de0e3953729a3777c4d8ed021bacd519"
 
 [[projects]]
   name = "github.com/RoaringBitmap/roaring"
@@ -33,8 +33,8 @@
     "lexers",
     "styles"
   ]
-  revision = "bc2d6680e4f0f640898b2564c3d479d5cb9023f3"
-  version = "v0.1.1"
+  revision = "e0f32fbcb59bc99c521910291b7ba8ecdb17ca34"
+  version = "v0.2.1"
 
 [[projects]]
   name = "github.com/blevesearch/bleve"
@@ -176,7 +176,7 @@
   branch = "master"
   name = "github.com/microcosm-cc/bluemonday"
   packages = ["."]
-  revision = "542fd4642604d0d0c26112396ce5b1a9d01eee0b"
+  revision = "995366fdf961d03629cd17361bddd32745718e2c"
 
 [[projects]]
   branch = "master"
@@ -189,12 +189,6 @@
   packages = ["."]
   revision = "bb6d471dc95d4fe11e432687f8b70ff496cf3136"
   version = "v1.0.0"
-
-[[projects]]
-  name = "github.com/russross/blackfriday"
-  packages = ["."]
-  revision = "cadec560ec52d93835bf2f15bd794700d3a2473b"
-  version = "v2.0.0"
 
 [[projects]]
   branch = "master"
@@ -234,7 +228,7 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "13d03a9a82fba647c21a0ef8fba44a795d0f0835"
+  revision = "378d26f46672a356c46195c28f61bdb4c0a781dd"
 
 [[projects]]
   name = "gopkg.in/russross/blackfriday.v2"
@@ -245,6 +239,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "7642af9f45c4acdfccced5ca7a95f568c9d1dded21f75a5ea004cf20bc3a578d"
+  inputs-digest = "005497bf6373e87de8055507c9d305604dcc616ecd7e9d556214d7f3cd8b1a13"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -1,11 +1,32 @@
 package chroma
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 //go:generate stringer -type TokenType
 
 // TokenType is the type of token to highlight.
 //
 // It is also an Emitter, emitting a single token of itself
 type TokenType int
+
+func (t *TokenType) MarshalJSON() ([]byte, error) { return json.Marshal(t.String()) }
+func (t *TokenType) UnmarshalJSON(data []byte) error {
+	key := ""
+	err := json.Unmarshal(data, &key)
+	if err != nil {
+		return err
+	}
+	for tt, text := range _TokenType_map {
+		if text == key {
+			*t = tt
+			return nil
+		}
+	}
+	return fmt.Errorf("unknown TokenType %q", data)
+}
 
 // Set of TokenTypes.
 //
@@ -19,8 +40,14 @@ const (
 	Background TokenType = -1 - iota
 	// Line numbers in output.
 	LineNumbers
+	// Line numbers in output when in table.
+	LineNumbersTable
 	// Line higlight style.
 	LineHighlight
+	// Line numbers table wrapper style.
+	LineTable
+	// Line numbers table TD wrapper style.
+	LineTableTD
 	// Input that could not be tokenised.
 	Error
 	// Other is used by the Delegate lexer to indicate which tokens should be handled by the delegate.
@@ -190,14 +217,16 @@ const (
 
 var (
 	StandardTypes = map[TokenType]string{
-		Background:    "chroma",
-		LineNumbers:   "ln",
-		LineHighlight: "hl",
-
-		Text:       "",
-		Whitespace: "w",
-		Error:      "err",
-		Other:      "x",
+		Background:       "chroma",
+		LineNumbers:      "ln",
+		LineNumbersTable: "lnt",
+		LineHighlight:    "hl",
+		LineTable:        "lntable",
+		LineTableTD:      "lntd",
+		Text:             "",
+		Whitespace:       "w",
+		Error:            "err",
+		Other:            "x",
 		// I have no idea what this is used for...
 		// Escape:     "esc",
 

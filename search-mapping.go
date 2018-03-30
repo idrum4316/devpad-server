@@ -6,7 +6,7 @@ import (
 	"github.com/blevesearch/bleve/mapping"
 )
 
-// Create the Bleve mapping for a page structure
+// NewPageMapping creates the Bleve mapping for a page structure
 func NewPageMapping() *mapping.IndexMappingImpl {
 
 	// Mapping for english fields
