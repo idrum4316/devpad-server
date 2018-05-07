@@ -164,8 +164,8 @@ func (bc *bitmapContainer) getSizeInBytes() int {
 }
 
 func (bc *bitmapContainer) serializedSizeInBytes() int {
-	return bc.Msgsize()
-	//return len(bc.bitmap) * 8 // +  bcBaseBytes
+	//return bc.Msgsize()// NOO! This breaks GetSerializedSizeInBytes
+	return len(bc.bitmap) * 8
 }
 
 const bcBaseBytes = int(unsafe.Sizeof(bitmapContainer{}))
@@ -953,7 +953,7 @@ func (bc *bitmapContainer) toEfficientContainer() container {
 	card := bc.getCardinality()
 	sizeAsArrayContainer := arrayContainerSizeInBytes(card)
 
-	if sizeAsRunContainer <= min(sizeAsBitmapContainer, sizeAsArrayContainer) {
+	if sizeAsRunContainer <= minOfInt(sizeAsBitmapContainer, sizeAsArrayContainer) {
 		return newRunContainer16FromBitmapContainer(bc)
 	}
 	if card <= arrayDefaultMaxSize {

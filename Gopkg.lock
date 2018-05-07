@@ -11,13 +11,13 @@
   branch = "master"
   name = "github.com/Depado/bfchroma"
   packages = ["."]
-  revision = "8c923959de0e3953729a3777c4d8ed021bacd519"
+  revision = "54f7a392d2dd8248f002786cf9ba3ed849fcbda2"
 
 [[projects]]
   name = "github.com/RoaringBitmap/roaring"
   packages = ["."]
-  revision = "d6540aab65a17321470b1661bfc52da1823871e9"
-  version = "v0.4.3"
+  revision = "77b4f79fe76d21c3b5aa05d6971e6e5689d763d9"
+  version = "v0.4.6"
 
 [[projects]]
   branch = "master"
@@ -31,10 +31,35 @@
     ".",
     "formatters/html",
     "lexers",
+    "lexers/a",
+    "lexers/b",
+    "lexers/c",
+    "lexers/d",
+    "lexers/e",
+    "lexers/f",
+    "lexers/g",
+    "lexers/h",
+    "lexers/i",
+    "lexers/internal",
+    "lexers/j",
+    "lexers/k",
+    "lexers/l",
+    "lexers/m",
+    "lexers/n",
+    "lexers/o",
+    "lexers/p",
+    "lexers/q",
+    "lexers/r",
+    "lexers/s",
+    "lexers/t",
+    "lexers/v",
+    "lexers/w",
+    "lexers/x",
+    "lexers/y",
     "styles"
   ]
-  revision = "e0f32fbcb59bc99c521910291b7ba8ecdb17ca34"
-  version = "v0.2.1"
+  revision = "3020e2ea8c6b1a9c2336022d847c4392c3997f02"
+  version = "v0.4.0"
 
 [[projects]]
   name = "github.com/blevesearch/bleve"
@@ -107,7 +132,7 @@
     "regexp",
     "utf8"
   ]
-  revision = "5083a469fcef50a4705e3c90652246ecd6806f2a"
+  revision = "eb6ae3743b3f300f2136f83ca78c08cc071edbd4"
 
 [[projects]]
   branch = "master"
@@ -145,8 +170,8 @@
 [[projects]]
   name = "github.com/golang/protobuf"
   packages = ["proto"]
-  revision = "925541529c1fa6821df4e44ce2723319eb2be768"
-  version = "v1.0.0"
+  revision = "b4deda0973fb4c70b50d226b1af49f3da59f5265"
+  version = "v1.1.0"
 
 [[projects]]
   branch = "master"
@@ -222,13 +247,13 @@
     "html",
     "html/atom"
   ]
-  revision = "6078986fec03a1dcc236c34816c71b0e05018fda"
+  revision = "640f4622ab692b87c2f3a94265e6f579fe38263d"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "378d26f46672a356c46195c28f61bdb4c0a781dd"
+  revision = "6f686a352de66814cdd080d970febae7767857a3"
 
 [[projects]]
   name = "gopkg.in/russross/blackfriday.v2"
