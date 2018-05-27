@@ -6,21 +6,42 @@ import (
 	"strconv"
 
 	"github.com/blevesearch/bleve"
+	"github.com/blevesearch/bleve/search/query"
 )
 
 // SearchHandler searches the wiki files for a search term
 func SearchHandler(a *AppContext) (handler http.HandlerFunc) {
 	handler = func(w http.ResponseWriter, r *http.Request) {
 
-		queryString := r.URL.Query()["q"]
 		searchQuery := ""
 
-		if len(queryString) > 0 {
-			searchQuery = queryString[0]
+		searchInput, ok := r.URL.Query()["q"]
+		if ok {
+			if len(searchInput) > 0 {
+				searchQuery = searchInput[0]
+			}
 		}
 
-		query := bleve.NewQueryStringQuery(searchQuery)
-		search := bleve.NewSearchRequest(query)
+		queries := []query.Query{}
+
+		if searchQuery == "" {
+			queries = append(queries, bleve.NewMatchAllQuery())
+		} else {
+			queries = append(queries, bleve.NewQueryStringQuery(searchQuery))
+		}
+
+		// Check for the 'size' parameter
+		tags, ok := r.URL.Query()["tag"]
+		if ok {
+			for _, tag := range tags {
+				tagQuery := bleve.NewTermQuery(tag)
+				tagQuery.FieldVal = "tags"
+				queries = append(queries, tagQuery)
+			}
+		}
+
+		q := bleve.NewConjunctionQuery(queries...)
+		search := bleve.NewSearchRequest(q)
 		search.Highlight = bleve.NewHighlight()
 		search.Fields = []string{"title", "tags"}
 
@@ -49,6 +70,10 @@ func SearchHandler(a *AppContext) (handler http.HandlerFunc) {
 			}
 			search.From = fromInt
 		}
+
+		// Add the Tags facet
+		tagsFacet := bleve.NewFacetRequest("tags", 100)
+		search.AddFacet("tags", tagsFacet)
 
 		searchResults, err := a.SearchIndex.Search(search)
 		if err != nil {
