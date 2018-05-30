@@ -43,7 +43,7 @@ func SearchHandler(a *AppContext) (handler http.HandlerFunc) {
 		q := bleve.NewConjunctionQuery(queries...)
 		search := bleve.NewSearchRequest(q)
 		search.Highlight = bleve.NewHighlight()
-		search.Fields = []string{"title", "tags"}
+		search.Fields = []string{"title", "tags", "modified"}
 
 		// Check for the 'size' parameter
 		size, ok := r.URL.Query()["size"]
@@ -69,6 +69,12 @@ func SearchHandler(a *AppContext) (handler http.HandlerFunc) {
 				return
 			}
 			search.From = fromInt
+		}
+
+		// Check for the 'sort' paramter
+		sort, ok := r.URL.Query()["sort"]
+		if ok {
+			search.SortBy(sort)
 		}
 
 		// Add the Tags facet

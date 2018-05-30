@@ -1,6 +1,8 @@
 wiki/
 *.exe
 devpad-server
+server
+devpad-linux64
 .idea/
 config.toml
 .DS_Store
