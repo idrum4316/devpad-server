@@ -42,6 +42,7 @@ func main() {
 	apiRouter.HandleFunc("/pages/{slug}", DeletePageHandler(appContext)).Methods("DELETE")
 	apiRouter.HandleFunc("/search", SearchHandler(appContext)).Methods("GET")
 	apiRouter.HandleFunc("/tags", GetTagsHandler(appContext)).Methods("GET")
+	apiRouter.HandleFunc("/preview", PostPreviewHandler(appContext)).Methods("POST")
 
 	// Serves static files
 	if appContext.Config.ServeStatic {
