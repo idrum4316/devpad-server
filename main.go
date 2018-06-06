@@ -21,12 +21,14 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	go indexAll(appContext)
 
 	// Create the wiki directory if it doesn't exist
 	if _, err = os.Stat(appContext.Config.WikiDir); os.IsNotExist(err) {
 		os.MkdirAll(appContext.Config.WikiDir, 0775)
 	}
+
+	// Add all of the wiki pages to the search index
+	go indexAll(appContext)
 
 	// HTTP Router
 	router := mux.NewRouter()
