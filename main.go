@@ -5,9 +5,12 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/idrum4316/devpad-server/internal/datastore"
+	"github.com/idrum4316/devpad-server/internal/search"
 )
 
 var version = "0.0.6"
@@ -17,18 +20,27 @@ func main() {
 	// Load the configuration file
 	appContext := NewAppContext()
 	appContext.Config.LoadFromFile("config.toml")
-	err := initSearchIndex(appContext)
+
+	// Create the data directory if it doesn't exist
+	if _, err := os.Stat(appContext.Config.DataDir); os.IsNotExist(err) {
+		os.MkdirAll(appContext.Config.DataDir, 0700)
+	}
+
+	// Create and attach the Bolt datastore
+	store, err := datastore.New(path.Join(appContext.Config.DataDir, "devpad.db"))
 	if err != nil {
 		log.Fatal(err)
 	}
+	appContext.Store = store
+	defer appContext.Store.Close()
 
-	// Create the wiki directory if it doesn't exist
-	if _, err = os.Stat(appContext.Config.WikiDir); os.IsNotExist(err) {
-		os.MkdirAll(appContext.Config.WikiDir, 0775)
+	// Create and attach the Bleve search index
+	index, err := search.NewIndex(path.Join(appContext.Config.DataDir, "pages.index"))
+	if err != nil {
+		log.Fatal(err)
 	}
-
-	// Add all of the wiki pages to the search index
-	go indexAll(appContext)
+	appContext.Index = index
+	defer appContext.Index.Close()
 
 	// HTTP Router
 	router := mux.NewRouter()

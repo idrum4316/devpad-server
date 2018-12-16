@@ -29,9 +29,9 @@ func GetTagsHandler(a *AppContext) (handler http.HandlerFunc) {
 		query := bleve.NewMatchAllQuery()
 		search := bleve.NewSearchRequest(query)
 		search.Size = 0
-		tagsFacet := bleve.NewFacetRequest("tags", numTags)
+		tagsFacet := bleve.NewFacetRequest("metadata.tags", numTags)
 		search.AddFacet("tags", tagsFacet)
-		searchResults, err := a.SearchIndex.Search(search)
+		searchResults, err := a.Index.ExecuteSearch(search)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write(FormatError("Unable to process your search query."))

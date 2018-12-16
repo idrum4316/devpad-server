@@ -1,19 +1,16 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"log"
 	"net/http"
-	"os"
-	"path"
 	"strconv"
 
-	"github.com/BurntSushi/toml"
 	"github.com/Depado/bfchroma"
 	"github.com/blevesearch/bleve"
 	"github.com/gorilla/mux"
+	"github.com/idrum4316/devpad-server/internal/page"
 	"github.com/microcosm-cc/bluemonday"
 	bf "gopkg.in/russross/blackfriday.v2"
 )
@@ -25,7 +22,7 @@ func GetPagesHandler(a *AppContext) (handler http.HandlerFunc) {
 
 		query := bleve.NewMatchAllQuery()
 		search := bleve.NewSearchRequest(query)
-		search.Fields = []string{"title", "tags", "modified"}
+		search.Fields = []string{"metadata.title", "metadata.tags", "metadata.modified"}
 
 		// Check for the 'size' parameter
 		size, ok := r.URL.Query()["size"]
@@ -59,7 +56,7 @@ func GetPagesHandler(a *AppContext) (handler http.HandlerFunc) {
 			search.SortBy(sortOrder)
 		}
 
-		searchResults, err := a.SearchIndex.Search(search)
+		searchResults, err := a.Index.ExecuteSearch(search)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write(FormatError("Unable to process your search query."))
@@ -83,19 +80,23 @@ func GetPageHandler(a *AppContext) (handler http.HandlerFunc) {
 	handler = func(w http.ResponseWriter, r *http.Request) {
 
 		vars := mux.Vars(r)
-		path := fmt.Sprintf("%s.md", path.Join(a.Config.WikiDir, vars["slug"]))
+		fmt.Printf("Getting Page: %s\n", vars["slug"])
 
-		if _, err := os.Stat(path); os.IsNotExist(err) {
-			w.WriteHeader(http.StatusNotFound)
-			w.Write(FormatError("The page you requested could not be found."))
-			return
-		}
+		pg, err := a.Store.GetPage(vars["slug"])
 
-		page, err := NewPageFromFile(path)
+		// Do this if there was an error loading the page (the page not
+		// existing is not an error).
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write(FormatError("The server encountered an error trying to " +
-				"parse the requested file."))
+				"load the requested page."))
+			return
+		}
+
+		// Do this if the page doesn't exist
+		if pg == nil {
+			w.WriteHeader(http.StatusNotFound)
+			w.Write(FormatError("The page you requested could not be found."))
 			return
 		}
 
@@ -122,15 +123,15 @@ func GetPageHandler(a *AppContext) (handler http.HandlerFunc) {
 			}
 
 			if a.Config.SanitizeHTML {
-				unsafe := bf.Run([]byte(page.Contents), bf.WithRenderer(renderer))
-				page.Contents = string(bluemonday.UGCPolicy().SanitizeBytes(unsafe))
+				unsafe := bf.Run([]byte(pg.Contents), bf.WithRenderer(renderer))
+				pg.Contents = string(bluemonday.UGCPolicy().SanitizeBytes(unsafe))
 			} else {
 				r := bfchroma.NewRenderer(
 					bfchroma.Extend(renderer),
 					bfchroma.WithoutAutodetect(),
 					bfchroma.Style("tango"),
 				)
-				page.Contents = string(bf.Run([]byte(page.Contents), bf.WithRenderer(r)))
+				pg.Contents = string(bf.Run([]byte(pg.Contents), bf.WithRenderer(r)))
 			}
 
 		case "source":
@@ -141,7 +142,7 @@ func GetPageHandler(a *AppContext) (handler http.HandlerFunc) {
 			return
 		}
 
-		j, err := json.Marshal(page)
+		j, err := json.Marshal(pg)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write(FormatError("An error occurred occurred trying to format " +
@@ -160,38 +161,30 @@ func PutPageHandler(a *AppContext) (handler http.HandlerFunc) {
 	handler = func(w http.ResponseWriter, r *http.Request) {
 
 		vars := mux.Vars(r)
-		path := fmt.Sprintf("%s.md", path.Join(a.Config.WikiDir, vars["slug"]))
 
 		decoder := json.NewDecoder(r.Body)
-		var p Page
-		err := decoder.Decode(&p)
+		pg := page.New()
+		err := decoder.Decode(pg)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write(FormatError("Unable to decode JSON request."))
+			log.Println(err)
 			return
 		}
 
-		// Don't write the header if it's empty
-		if p.Header().IsBlank() {
-			err = ioutil.WriteFile(path, []byte(p.Contents), 0644)
-		} else {
-			headerBuf := new(bytes.Buffer)
-			if err = toml.NewEncoder(headerBuf).Encode(p.Header()); err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
-				w.Write(FormatError("Unable to encode page header."))
-				return
-			}
-
-			fileContents := fmt.Sprintf("<!-- Devpad Header\n%s-->\n\n%s",
-				headerBuf.String(), p.Contents)
-
-			err = ioutil.WriteFile(path, []byte(fileContents), 0644)
-
-		}
-
+		// Update the page in datastore
+		err = a.Store.UpdatePage(pg, vars["slug"])
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(FormatError("Unable to write file to disk."))
+			w.Write(FormatError("Unable to save page."))
+			return
+		}
+
+		// Update the page in the search index
+		err = a.Index.IndexPage(vars["slug"], pg)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(FormatError("Unable to update search index."))
 			return
 		}
 
@@ -202,13 +195,13 @@ func PutPageHandler(a *AppContext) (handler http.HandlerFunc) {
 // DeletePageHandler deletes a markdown file.
 func DeletePageHandler(a *AppContext) (handler http.HandlerFunc) {
 	handler = func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		path := a.Config.WikiDir + vars["slug"] + ".md"
 
-		err := os.Remove(path)
+		vars := mux.Vars(r)
+
+		err := a.Store.DeletePage(vars["slug"])
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(FormatError("Unable to delete file from disk."))
+			w.Write(FormatError("Unable to delete page."))
 			return
 		}
 

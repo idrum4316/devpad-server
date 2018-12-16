@@ -6,30 +6,26 @@ import (
 
 // AppConfig is the main configuration struct of the devpad-server application.
 type AppConfig struct {
-	Port          int
-	ListenHost    string
-	WikiDir       string
-	ServeStatic   bool
-	Webroot       string
-	IndexInMemory bool
-	IndexLoc      string
-	DefaultFile   string
-	SanitizeHTML  bool
+	Port         int
+	ListenHost   string
+	DataDir      string
+	ServeStatic  bool
+	Webroot      string
+	DefaultFile  string
+	SanitizeHTML bool
 }
 
 // NewAppConfig is a constructor that returns a new AppConfig instance with some
 // default values set.
 func NewAppConfig() (c *AppConfig) {
 	c = &AppConfig{
-		Port:          8080,
-		ListenHost:    "127.0.0.1",
-		WikiDir:       "./wiki/",
-		ServeStatic:   true,
-		Webroot:       "./wwwroot/",
-		IndexInMemory: false,
-		IndexLoc:      "./pages.index",
-		DefaultFile:   "",
-		SanitizeHTML:  true,
+		Port:         8080,
+		ListenHost:   "127.0.0.1",
+		DataDir:      "./data/",
+		ServeStatic:  true,
+		Webroot:      "./wwwroot/",
+		DefaultFile:  "",
+		SanitizeHTML: true,
 	}
 	return
 }

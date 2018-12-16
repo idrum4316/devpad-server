@@ -1,0 +1,132 @@
+# github.com/BurntSushi/toml v0.3.0
+github.com/BurntSushi/toml
+# github.com/Depado/bfchroma v0.0.0-20180404122832-54f7a392d2dd
+github.com/Depado/bfchroma
+# github.com/RoaringBitmap/roaring v0.4.6
+github.com/RoaringBitmap/roaring
+# github.com/Smerity/govarint v0.0.0-20150407073650-7265e41f48f1
+github.com/Smerity/govarint
+# github.com/alecthomas/chroma v0.4.0
+github.com/alecthomas/chroma
+github.com/alecthomas/chroma/formatters/html
+github.com/alecthomas/chroma/lexers
+github.com/alecthomas/chroma/styles
+github.com/alecthomas/chroma/lexers/a
+github.com/alecthomas/chroma/lexers/b
+github.com/alecthomas/chroma/lexers/c
+github.com/alecthomas/chroma/lexers/d
+github.com/alecthomas/chroma/lexers/e
+github.com/alecthomas/chroma/lexers/f
+github.com/alecthomas/chroma/lexers/g
+github.com/alecthomas/chroma/lexers/h
+github.com/alecthomas/chroma/lexers/i
+github.com/alecthomas/chroma/lexers/internal
+github.com/alecthomas/chroma/lexers/j
+github.com/alecthomas/chroma/lexers/k
+github.com/alecthomas/chroma/lexers/l
+github.com/alecthomas/chroma/lexers/m
+github.com/alecthomas/chroma/lexers/n
+github.com/alecthomas/chroma/lexers/o
+github.com/alecthomas/chroma/lexers/p
+github.com/alecthomas/chroma/lexers/q
+github.com/alecthomas/chroma/lexers/r
+github.com/alecthomas/chroma/lexers/s
+github.com/alecthomas/chroma/lexers/t
+github.com/alecthomas/chroma/lexers/v
+github.com/alecthomas/chroma/lexers/w
+github.com/alecthomas/chroma/lexers/x
+github.com/alecthomas/chroma/lexers/y
+# github.com/blevesearch/bleve v0.7.0
+github.com/blevesearch/bleve
+github.com/blevesearch/bleve/analysis/analyzer/keyword
+github.com/blevesearch/bleve/mapping
+github.com/blevesearch/bleve/search/query
+github.com/blevesearch/bleve/analysis
+github.com/blevesearch/bleve/analysis/datetime/optional
+github.com/blevesearch/bleve/document
+github.com/blevesearch/bleve/index
+github.com/blevesearch/bleve/index/scorch
+github.com/blevesearch/bleve/index/store
+github.com/blevesearch/bleve/index/store/boltdb
+github.com/blevesearch/bleve/index/store/gtreap
+github.com/blevesearch/bleve/index/upsidedown
+github.com/blevesearch/bleve/registry
+github.com/blevesearch/bleve/search
+github.com/blevesearch/bleve/search/collector
+github.com/blevesearch/bleve/search/facet
+github.com/blevesearch/bleve/search/highlight
+github.com/blevesearch/bleve/search/highlight/highlighter/html
+github.com/blevesearch/bleve/analysis/tokenizer/single
+github.com/blevesearch/bleve/analysis/analyzer/standard
+github.com/blevesearch/bleve/geo
+github.com/blevesearch/bleve/numeric
+github.com/blevesearch/bleve/search/searcher
+github.com/blevesearch/bleve/analysis/datetime/flexible
+github.com/blevesearch/bleve/index/scorch/mergeplan
+github.com/blevesearch/bleve/index/scorch/segment
+github.com/blevesearch/bleve/index/scorch/segment/mem
+github.com/blevesearch/bleve/index/scorch/segment/zap
+github.com/blevesearch/bleve/search/highlight/format/html
+github.com/blevesearch/bleve/search/highlight/fragmenter/simple
+github.com/blevesearch/bleve/search/highlight/highlighter/simple
+github.com/blevesearch/bleve/analysis/lang/en
+github.com/blevesearch/bleve/analysis/token/lowercase
+github.com/blevesearch/bleve/analysis/tokenizer/unicode
+github.com/blevesearch/bleve/search/scorer
+github.com/blevesearch/bleve/analysis/token/porter
+github.com/blevesearch/bleve/analysis/token/stop
+# github.com/blevesearch/go-porterstemmer v1.0.1
+github.com/blevesearch/go-porterstemmer
+# github.com/blevesearch/segment v0.0.0-20160915185041-762005e7a34f
+github.com/blevesearch/segment
+# github.com/boltdb/bolt v1.3.1
+github.com/boltdb/bolt
+# github.com/couchbase/vellum v0.0.0-20180427141700-eb6ae3743b3f
+github.com/couchbase/vellum
+github.com/couchbase/vellum/regexp
+github.com/couchbase/vellum/utf8
+# github.com/danwakefield/fnmatch v0.0.0-20160403171240-cbb64ac3d964
+github.com/danwakefield/fnmatch
+# github.com/dlclark/regexp2 v1.1.6
+github.com/dlclark/regexp2
+github.com/dlclark/regexp2/syntax
+# github.com/edsrzf/mmap-go v0.0.0-20170320065105-0bce6a688712
+github.com/edsrzf/mmap-go
+# github.com/fsnotify/fsnotify v1.4.7
+github.com/fsnotify/fsnotify
+# github.com/glycerine/go-unsnap-stream v0.0.0-20180323001048-9f0cb55181dd
+github.com/glycerine/go-unsnap-stream
+# github.com/golang/protobuf v1.1.0
+github.com/golang/protobuf/proto
+# github.com/golang/snappy v0.0.0-20170215233205-553a64147049
+github.com/golang/snappy
+# github.com/gorilla/context v0.0.0-20160226214623-1ea25387ff6f
+github.com/gorilla/context
+# github.com/gorilla/handlers v1.3.0
+github.com/gorilla/handlers
+# github.com/gorilla/mux v1.6.1
+github.com/gorilla/mux
+# github.com/microcosm-cc/bluemonday v0.0.0-20180327211928-995366fdf961
+github.com/microcosm-cc/bluemonday
+# github.com/mschoch/smat v0.0.0-20160514031455-90eadee771ae
+github.com/mschoch/smat
+# github.com/philhofer/fwd v1.0.0
+github.com/philhofer/fwd
+# github.com/shurcooL/sanitized_anchor_name v0.0.0-20170918181015-86672fcb3f95
+github.com/shurcooL/sanitized_anchor_name
+# github.com/steveyen/gtreap v0.0.0-20150807155958-0abe01ef9be2
+github.com/steveyen/gtreap
+# github.com/tinylib/msgp v1.0.2
+github.com/tinylib/msgp/msgp
+# github.com/willf/bitset v1.1.3
+github.com/willf/bitset
+# go.etcd.io/bbolt v1.3.0
+go.etcd.io/bbolt
+# golang.org/x/net v0.0.0-20180502164142-640f4622ab69
+golang.org/x/net/context
+golang.org/x/net/html
+golang.org/x/net/html/atom
+# golang.org/x/sys v0.0.0-20180504064212-6f686a352de6
+golang.org/x/sys/unix
+# gopkg.in/russross/blackfriday.v2 v2.0.0
+gopkg.in/russross/blackfriday.v2

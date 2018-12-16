@@ -8,8 +8,8 @@
 # from localhost, and 0.0.0.0 would accept all incoming connections.
 #ListenHost = "127.0.0.1"
 
-# The WikiDir is where your markdown files will be stored.
-#WikiDir = "./wiki/"
+# The DataDir is where the database and search index will be stored.
+#WikiDir = "./data/"
 
 # Enable ServeStatic to allow the server to serve static files...
 # (html, js, css, images, etc.)
@@ -18,14 +18,6 @@
 # If you have ServeStatic enabled, this will be your static file server's
 # document root.
 #Webroot = "./wwwroot/"
-
-# Create the search index in memory? Setting to tru will use more memory, but
-# will have higher performance
-#IndexInMemory = false
-
-# If you choose not to hold the search index in memory, this is where the index
-# will reside on disk.
-#IndexLoc = "./pages.index"
 
 # In your static file server, if the static file doesn't exist, this file will
 # be served instead of a 404 response. This is handy for serving single page

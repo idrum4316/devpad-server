@@ -1,4 +1,4 @@
-package main
+package search
 
 import (
 	"github.com/blevesearch/bleve"
@@ -19,7 +19,7 @@ func NewPageMapping() *mapping.IndexMappingImpl {
 
 	pageMapping := bleve.NewDocumentMapping()
 	pageMapping.AddFieldMappingsAt("contents", enFieldMapping)
-	pageMapping.AddFieldMappingsAt("tags", kwFieldMapping)
+	pageMapping.AddFieldMappingsAt("metadata.tags", kwFieldMapping)
 
 	m := bleve.NewIndexMapping()
 	m.DefaultMapping = pageMapping

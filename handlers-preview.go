@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/Depado/bfchroma"
+	"github.com/idrum4316/devpad-server/internal/page"
 	"github.com/microcosm-cc/bluemonday"
 	bf "gopkg.in/russross/blackfriday.v2"
 )
@@ -14,8 +15,8 @@ func PostPreviewHandler(a *AppContext) (handler http.HandlerFunc) {
 	handler = func(w http.ResponseWriter, r *http.Request) {
 
 		decoder := json.NewDecoder(r.Body)
-		page := NewPage()
-		err := decoder.Decode(&page)
+		pg := page.Page{}
+		err := decoder.Decode(&pg)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write(FormatError("Unable to decode JSON request."))
@@ -37,18 +38,18 @@ func PostPreviewHandler(a *AppContext) (handler http.HandlerFunc) {
 		}
 
 		if a.Config.SanitizeHTML {
-			unsafe := bf.Run([]byte(page.Contents), bf.WithRenderer(renderer))
-			page.Contents = string(bluemonday.UGCPolicy().SanitizeBytes(unsafe))
+			unsafe := bf.Run([]byte(pg.Contents), bf.WithRenderer(renderer))
+			pg.Contents = string(bluemonday.UGCPolicy().SanitizeBytes(unsafe))
 		} else {
 			r := bfchroma.NewRenderer(
 				bfchroma.Extend(renderer),
 				bfchroma.WithoutAutodetect(),
 				bfchroma.Style("tango"),
 			)
-			page.Contents = string(bf.Run([]byte(page.Contents), bf.WithRenderer(r)))
+			pg.Contents = string(bf.Run([]byte(pg.Contents), bf.WithRenderer(r)))
 		}
 
-		j, err := json.Marshal(page)
+		j, err := json.Marshal(pg)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write(FormatError("An error occurred occurred trying to format " +

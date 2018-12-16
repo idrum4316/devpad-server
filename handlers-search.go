@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -35,7 +36,7 @@ func SearchHandler(a *AppContext) (handler http.HandlerFunc) {
 		if ok {
 			for _, tag := range tags {
 				tagQuery := bleve.NewTermQuery(tag)
-				tagQuery.FieldVal = "tags"
+				tagQuery.FieldVal = "metadata.tags"
 				queries = append(queries, tagQuery)
 			}
 		}
@@ -43,7 +44,7 @@ func SearchHandler(a *AppContext) (handler http.HandlerFunc) {
 		q := bleve.NewConjunctionQuery(queries...)
 		search := bleve.NewSearchRequest(q)
 		search.Highlight = bleve.NewHighlight()
-		search.Fields = []string{"title", "tags", "modified"}
+		search.Fields = []string{"contents", "metadata.title", "metadata.tags", "metadata.modified"}
 
 		// Check for the 'size' parameter
 		size, ok := r.URL.Query()["size"]
@@ -73,15 +74,16 @@ func SearchHandler(a *AppContext) (handler http.HandlerFunc) {
 
 		// Check for the 'sort' paramter
 		sort, ok := r.URL.Query()["sort"]
+		fmt.Printf("Sort By: %+v\n", sort)
 		if ok {
 			search.SortBy(sort)
 		}
 
 		// Add the Tags facet
-		tagsFacet := bleve.NewFacetRequest("tags", 100)
+		tagsFacet := bleve.NewFacetRequest("metadata.tags", 100)
 		search.AddFacet("tags", tagsFacet)
 
-		searchResults, err := a.SearchIndex.Search(search)
+		searchResults, err := a.Index.ExecuteSearch(search)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write(FormatError("Unable to process your search query."))

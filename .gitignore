@@ -1,11 +1,8 @@
-wiki/
+data/
 *.exe
 devpad-server
-server
-devpad-linux64
+devpad
 .idea/
 config.toml
 .DS_Store
 wwwroot/
-search.index/
-pages.index/
