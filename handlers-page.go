@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -80,9 +79,9 @@ func GetPageHandler(a *AppContext) (handler http.HandlerFunc) {
 	handler = func(w http.ResponseWriter, r *http.Request) {
 
 		vars := mux.Vars(r)
-		fmt.Printf("Getting Page: %s\n", vars["slug"])
+		slug := vars["slug"]
 
-		pg, err := a.Store.GetPage(vars["slug"])
+		pg, err := a.Store.GetPage(slug)
 
 		// Do this if there was an error loading the page (the page not
 		// existing is not an error).
