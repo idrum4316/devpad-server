@@ -197,11 +197,19 @@ func DeletePageHandler(a *AppContext) (handler http.HandlerFunc) {
 	handler = func(w http.ResponseWriter, r *http.Request) {
 
 		vars := mux.Vars(r)
+		pageID := vars["slug"]
 
-		err := a.Store.DeletePage(vars["slug"])
+		err := a.Store.DeletePage(pageID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write(FormatError("Unable to delete page."))
+			return
+		}
+
+		err = a.Index.DeletePage(pageID)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(FormatError("Unable to remove page from index."))
 			return
 		}
 

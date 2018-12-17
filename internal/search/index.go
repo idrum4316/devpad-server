@@ -61,3 +61,11 @@ func (i *Index) IndexPage(id string, p *page.Page) error {
 	return err
 
 }
+
+// DeletePage removes a page from the search index
+func (i *Index) DeletePage(id string) error {
+
+	err := i.index.Delete(id)
+	return err
+
+}
