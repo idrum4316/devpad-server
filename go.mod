@@ -32,7 +32,7 @@ require (
 	github.com/willf/bitset v1.1.3 // indirect
 	go.etcd.io/bbolt v1.3.0
 	golang.org/x/arch v0.0.0-20181203225421-5a4828bb7045 // indirect
-	golang.org/x/crypto v0.0.0-20181203042331-505ab145d0a9 // indirect
+	golang.org/x/crypto v0.0.0-20181203042331-505ab145d0a9
 	golang.org/x/net v0.0.0-20180502164142-640f4622ab69 // indirect
 	golang.org/x/sys v0.0.0-20180504064212-6f686a352de6 // indirect
 	gopkg.in/russross/blackfriday.v2 v2.0.0
