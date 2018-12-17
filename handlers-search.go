@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -74,7 +73,6 @@ func SearchHandler(a *AppContext) (handler http.HandlerFunc) {
 
 		// Check for the 'sort' paramter
 		sort, ok := r.URL.Query()["sort"]
-		fmt.Printf("Sort By: %+v\n", sort)
 		if ok {
 			search.SortBy(sort)
 		}
