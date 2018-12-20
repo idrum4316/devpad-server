@@ -53,7 +53,7 @@ func main() {
 			Admin: true,
 		}
 		u.SetPassword("admin")
-		err = appContext.Store.UpdateUser(&u)
+		err = appContext.Store.CreateUser(&u)
 		if err != nil {
 			log.Fatal(err)
 		}
