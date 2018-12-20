@@ -13,6 +13,7 @@ type AppConfig struct {
 	Webroot      string
 	DefaultFile  string
 	SanitizeHTML bool
+	SigningKey   string
 }
 
 // NewAppConfig is a constructor that returns a new AppConfig instance with some
@@ -26,6 +27,7 @@ func NewAppConfig() (c *AppConfig) {
 		Webroot:      "./wwwroot/",
 		DefaultFile:  "",
 		SanitizeHTML: true,
+		SigningKey:   "secret",
 	}
 	return
 }

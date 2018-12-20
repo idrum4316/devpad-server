@@ -10,8 +10,8 @@ import (
 )
 
 // SearchHandler searches the wiki files for a search term
-func SearchHandler(a *AppContext) (handler http.HandlerFunc) {
-	handler = func(w http.ResponseWriter, r *http.Request) {
+func SearchHandler(a *AppContext) http.Handler {
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		searchQuery := ""
 
@@ -96,6 +96,7 @@ func SearchHandler(a *AppContext) (handler http.HandlerFunc) {
 		}
 		w.Write(j)
 
-	}
-	return
+	})
+
+	return RequireAuth(handler, a)
 }

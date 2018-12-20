@@ -11,6 +11,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/idrum4316/devpad-server/internal/datastore"
 	"github.com/idrum4316/devpad-server/internal/search"
+	"github.com/idrum4316/devpad-server/internal/user"
 )
 
 var version = "0.0.6"
@@ -42,19 +43,37 @@ func main() {
 	appContext.Index = index
 	defer appContext.Index.Close()
 
+	userCount, err := appContext.Store.CountUsers()
+	if err != nil {
+		log.Fatal(err)
+	}
+	if userCount == 0 {
+		u := user.User{
+			ID:    "admin",
+			Admin: true,
+		}
+		u.SetPassword("admin")
+		err = appContext.Store.UpdateUser(&u)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Println("Default admin user created. Username:admin, Password: admin.")
+	}
+
 	// HTTP Router
 	router := mux.NewRouter()
 
 	// Handle the API calls
 	apiRouter := router.PathPrefix("/api").Subrouter()
-	apiRouter.HandleFunc("", APIInfoHandler(appContext)).Methods("GET")
-	apiRouter.HandleFunc("/pages", GetPagesHandler(appContext)).Methods("GET")
-	apiRouter.HandleFunc("/pages/{slug}", GetPageHandler(appContext)).Methods("GET")
-	apiRouter.HandleFunc("/pages/{slug}", PutPageHandler(appContext)).Methods("PUT")
-	apiRouter.HandleFunc("/pages/{slug}", DeletePageHandler(appContext)).Methods("DELETE")
-	apiRouter.HandleFunc("/search", SearchHandler(appContext)).Methods("GET")
-	apiRouter.HandleFunc("/tags", GetTagsHandler(appContext)).Methods("GET")
-	apiRouter.HandleFunc("/preview", PostPreviewHandler(appContext)).Methods("POST")
+	apiRouter.Handle("", APIInfoHandler(appContext)).Methods("GET")
+	apiRouter.Handle("/pages", GetPagesHandler(appContext)).Methods("GET")
+	apiRouter.Handle("/pages/{slug}", GetPageHandler(appContext)).Methods("GET")
+	apiRouter.Handle("/pages/{slug}", PutPageHandler(appContext)).Methods("PUT")
+	apiRouter.Handle("/pages/{slug}", DeletePageHandler(appContext)).Methods("DELETE")
+	apiRouter.Handle("/search", SearchHandler(appContext)).Methods("GET")
+	apiRouter.Handle("/tags", GetTagsHandler(appContext)).Methods("GET")
+	apiRouter.Handle("/preview", PostPreviewHandler(appContext)).Methods("POST")
+	apiRouter.Handle("/auth/token", GetAuthToken(appContext)).Methods("POST")
 
 	// Serves static files
 	if appContext.Config.ServeStatic {

@@ -30,3 +30,6 @@
 # Sanitize the HTML output when rendering markdown files? If enabled, you will
 # not get syntax highlighting in code blocks.
 #SanitizeHTML = true
+
+# This is the key used to sign JWT tokens.
+#SigningKey = "secret"

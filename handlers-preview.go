@@ -11,8 +11,8 @@ import (
 )
 
 // Render the text sent in to HTML
-func PostPreviewHandler(a *AppContext) (handler http.HandlerFunc) {
-	handler = func(w http.ResponseWriter, r *http.Request) {
+func PostPreviewHandler(a *AppContext) http.Handler {
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		decoder := json.NewDecoder(r.Body)
 		pg := page.Page{}
@@ -58,6 +58,7 @@ func PostPreviewHandler(a *AppContext) (handler http.HandlerFunc) {
 		}
 		w.Write(j)
 
-	}
-	return
+	})
+
+	return RequireAuth(handler, a)
 }

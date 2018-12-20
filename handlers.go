@@ -8,8 +8,8 @@ import (
 )
 
 // APIInfoHandler returns some information about the API
-func APIInfoHandler(a *AppContext) (handler http.HandlerFunc) {
-	handler = func(w http.ResponseWriter, r *http.Request) {
+func APIInfoHandler(a *AppContext) http.Handler {
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		type APIInfo struct {
 			Version string `json:"version"`
@@ -31,8 +31,9 @@ func APIInfoHandler(a *AppContext) (handler http.HandlerFunc) {
 
 		return
 
-	}
-	return
+	})
+
+	return handler
 }
 
 // FileServer serves static files. It can be set to serve a particular file in place of a

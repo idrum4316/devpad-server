@@ -16,8 +16,8 @@ import (
 
 // GetPagesHandler returns a list of all pages - with optional paging and
 // sorting
-func GetPagesHandler(a *AppContext) (handler http.HandlerFunc) {
-	handler = func(w http.ResponseWriter, r *http.Request) {
+func GetPagesHandler(a *AppContext) http.Handler {
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		query := bleve.NewMatchAllQuery()
 		search := bleve.NewSearchRequest(query)
@@ -70,13 +70,14 @@ func GetPagesHandler(a *AppContext) (handler http.HandlerFunc) {
 		}
 		w.Write(j)
 
-	}
-	return
+	})
+
+	return RequireAuth(handler, a)
 }
 
 // GetPageHandler returns the contents of a page - Markdown or HTML
-func GetPageHandler(a *AppContext) (handler http.HandlerFunc) {
-	handler = func(w http.ResponseWriter, r *http.Request) {
+func GetPageHandler(a *AppContext) http.Handler {
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		vars := mux.Vars(r)
 		slug := vars["slug"]
@@ -150,14 +151,15 @@ func GetPageHandler(a *AppContext) (handler http.HandlerFunc) {
 		}
 		w.Write(j)
 
-	}
-	return
+	})
+
+	return RequireAuth(handler, a)
 }
 
 // PutPageHandler updates the contents of a page - creating it if it doesn't
 // exist.
-func PutPageHandler(a *AppContext) (handler http.HandlerFunc) {
-	handler = func(w http.ResponseWriter, r *http.Request) {
+func PutPageHandler(a *AppContext) http.Handler {
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		vars := mux.Vars(r)
 
@@ -187,13 +189,14 @@ func PutPageHandler(a *AppContext) (handler http.HandlerFunc) {
 			return
 		}
 
-	}
-	return
+	})
+
+	return RequireAuth(handler, a)
 }
 
 // DeletePageHandler deletes a markdown file.
-func DeletePageHandler(a *AppContext) (handler http.HandlerFunc) {
-	handler = func(w http.ResponseWriter, r *http.Request) {
+func DeletePageHandler(a *AppContext) http.Handler {
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		vars := mux.Vars(r)
 		pageID := vars["slug"]
@@ -214,6 +217,7 @@ func DeletePageHandler(a *AppContext) (handler http.HandlerFunc) {
 
 		return
 
-	}
-	return
+	})
+
+	return RequireAuth(handler, a)
 }

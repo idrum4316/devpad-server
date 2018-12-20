@@ -9,8 +9,8 @@ import (
 )
 
 // GetTagsHandler returns a list of all tags
-func GetTagsHandler(a *AppContext) (handler http.HandlerFunc) {
-	handler = func(w http.ResponseWriter, r *http.Request) {
+func GetTagsHandler(a *AppContext) http.Handler {
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		numTags := 10000
 
 		// Check for the 'size' parameter
@@ -46,6 +46,7 @@ func GetTagsHandler(a *AppContext) (handler http.HandlerFunc) {
 		}
 		w.Write(j)
 
-	}
-	return
+	})
+
+	return RequireAuth(handler, a)
 }
