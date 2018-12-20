@@ -10,7 +10,7 @@ import (
 	bf "gopkg.in/russross/blackfriday.v2"
 )
 
-// Render the text sent in to HTML
+// PostPreviewHandler renders the text sent in to HTML
 func PostPreviewHandler(a *AppContext) http.Handler {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
