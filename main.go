@@ -74,6 +74,7 @@ func main() {
 	apiRouter.Handle("/tags", GetTagsHandler(appContext)).Methods("GET")
 	apiRouter.Handle("/preview", PostPreviewHandler(appContext)).Methods("POST")
 	apiRouter.Handle("/auth/token", GetAuthToken(appContext)).Methods("POST")
+	apiRouter.Handle("/account/password", ChangePasswordHandler(appContext)).Methods("POST")
 
 	// Serves static files
 	if appContext.Config.ServeStatic {
