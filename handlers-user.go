@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -69,7 +68,21 @@ func GetAuthToken(a *AppContext) http.Handler {
 			return
 		}
 
-		w.Write([]byte(fmt.Sprintf("{\"token\":\"%s\"}", tokenString)))
+		response := map[string]interface{}{
+			"token":    tokenString,
+			"is_admin": user.Admin,
+			"username": user.ID,
+		}
+
+		responseJSON, err := json.Marshal(response)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(FormatError("unable to encode response"))
+			log.Println(err)
+			return
+		}
+
+		w.Write(responseJSON)
 
 	})
 
