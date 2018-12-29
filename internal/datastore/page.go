@@ -2,6 +2,7 @@ package datastore
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/idrum4316/devpad-server/internal/page"
@@ -25,6 +26,41 @@ func (d *Datastore) UpdatePage(p *page.Page, pageID string) error {
 	})
 
 	return err
+}
+
+// RenamePage will delete the old page and insert the new one
+func (d *Datastore) RenamePage(oldID string, newID string) error {
+
+	// It's all done in one transaction so that any error will roll the
+	// transaction back.
+	err := d.db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(pagesBucket))
+
+		// Make sure the new ID is available
+		v := b.Get([]byte(newID))
+		if v != nil {
+			return fmt.Errorf("page %s already exists", newID)
+		}
+
+		// Get the old page
+		oldPage := b.Get([]byte(oldID))
+		if oldPage == nil {
+			return fmt.Errorf("could not find page %s", oldID)
+		}
+
+		// Insert the page into the new location
+		err := b.Put([]byte(newID), oldPage)
+		if err != nil {
+			return err
+		}
+
+		// Remove the old page location
+		err = b.Delete([]byte(oldID))
+		return err
+	})
+
+	return err
+
 }
 
 // DeletePage deletes a page from the datastore.

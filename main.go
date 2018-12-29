@@ -70,6 +70,7 @@ func main() {
 	apiRouter.Handle("/pages/{slug}", GetPageHandler(appContext)).Methods("GET")
 	apiRouter.Handle("/pages/{slug}", PutPageHandler(appContext)).Methods("PUT")
 	apiRouter.Handle("/pages/{slug}", DeletePageHandler(appContext)).Methods("DELETE")
+	apiRouter.Handle("/pages/{slug}/rename", RenamePageHandler(appContext)).Methods("GET")
 	apiRouter.Handle("/search", SearchHandler(appContext)).Methods("GET")
 	apiRouter.Handle("/tags", GetTagsHandler(appContext)).Methods("GET")
 	apiRouter.Handle("/preview", PostPreviewHandler(appContext)).Methods("POST")

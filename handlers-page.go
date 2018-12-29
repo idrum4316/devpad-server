@@ -221,3 +221,68 @@ func DeletePageHandler(a *AppContext) http.Handler {
 
 	return RequireAuth(handler, a)
 }
+
+// RenamePageHandler renames a page in the data store.
+func RenamePageHandler(a *AppContext) http.Handler {
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		vars := mux.Vars(r)
+		pageID := vars["slug"]
+		newID := ""
+
+		// Get the new page id from the query string
+		newIDParam, ok := r.URL.Query()["id"]
+		if ok {
+			if len(newIDParam) != 1 {
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write(FormatError("You must provide a single new page ID."))
+				return
+			} else {
+				newID = newIDParam[0]
+			}
+		} else {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(FormatError("You must provide a new page ID."))
+			return
+		}
+
+		// Rename the page
+		err := a.Store.RenamePage(pageID, newID)
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(FormatError("Unable to rename page."))
+			return
+		}
+
+		// Remove the old search index data
+		err = a.Index.DeletePage(pageID)
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(FormatError("Unable to remove old page from index."))
+			return
+		}
+
+		// Index the new page ID
+		pg, err := a.Store.GetPage(newID)
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(FormatError("Unable to update search index (1)."))
+			return
+		}
+		err = a.Index.IndexPage(newID, pg)
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(FormatError("Unable to update search index (2)."))
+			return
+		}
+
+		return
+
+	})
+
+	return RequireAuth(handler, a)
+}
