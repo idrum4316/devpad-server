@@ -52,10 +52,6 @@ func (u *User) VerifyPassword(password string) (bool, error) {
 		return false, err
 	}
 
-	if bytes.Equal(derivedKey, u.Password) {
-		return true, nil
-	}
-
-	return false, nil
+	return bytes.Equal(derivedKey, u.Password), nil
 
 }
