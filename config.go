@@ -25,7 +25,7 @@ func NewAppConfig() (c *AppConfig) {
 		DataDir:      "./data/",
 		ServeStatic:  true,
 		Webroot:      "./wwwroot/",
-		DefaultFile:  "",
+		DefaultFile:  "index.html",
 		SanitizeHTML: true,
 		SigningKey:   "secret",
 	}
