@@ -51,7 +51,7 @@ func SearchHandler(a *AppContext) http.Handler {
 			sizeInt, err := strconv.Atoi(size[0])
 			if err != nil {
 				w.WriteHeader(http.StatusBadRequest)
-				w.Write(FormatError("Unable to parse integer from 'size'" +
+				_, _ = w.Write(FormatError("Unable to parse integer from 'size'" +
 					" option."))
 				return
 			}
@@ -64,7 +64,7 @@ func SearchHandler(a *AppContext) http.Handler {
 			fromInt, err := strconv.Atoi(from[0])
 			if err != nil {
 				w.WriteHeader(http.StatusBadRequest)
-				w.Write(FormatError("Unable to parse integer from 'from'" +
+				_, _ = w.Write(FormatError("Unable to parse integer from 'from'" +
 					" option."))
 				return
 			}
@@ -84,17 +84,17 @@ func SearchHandler(a *AppContext) http.Handler {
 		searchResults, err := a.Index.ExecuteSearch(search)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(FormatError("Unable to process your search query."))
+			_, _ = w.Write(FormatError("Unable to process your search query."))
 			return
 		}
 
 		j, err := json.Marshal(searchResults)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(FormatError("Unable to encode the response."))
+			_, _ = w.Write(FormatError("Unable to encode the response."))
 			return
 		}
-		w.Write(j)
+		_, _ = w.Write(j)
 
 	})
 

@@ -19,7 +19,7 @@ func PostPreviewHandler(a *AppContext) http.Handler {
 		err := decoder.Decode(&pg)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write(FormatError("Unable to decode JSON request."))
+			_, _ = w.Write(FormatError("Unable to decode JSON request."))
 			return
 		}
 
@@ -52,11 +52,11 @@ func PostPreviewHandler(a *AppContext) http.Handler {
 		j, err := json.Marshal(pg)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(FormatError("An error occurred occurred trying to format " +
+			_, _ = w.Write(FormatError("An error occurred occurred trying to format " +
 				"a response."))
 			return
 		}
-		w.Write(j)
+		_, _ = w.Write(j)
 
 	})
 

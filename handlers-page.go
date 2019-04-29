@@ -29,7 +29,7 @@ func GetPagesHandler(a *AppContext) http.Handler {
 			sizeInt, err := strconv.Atoi(size[0])
 			if err != nil {
 				w.WriteHeader(http.StatusBadRequest)
-				w.Write(FormatError("Unable to parse integer from 'size'" +
+				_, _ = w.Write(FormatError("Unable to parse integer from 'size'" +
 					" option."))
 				return
 			}
@@ -42,7 +42,7 @@ func GetPagesHandler(a *AppContext) http.Handler {
 			fromInt, err := strconv.Atoi(from[0])
 			if err != nil {
 				w.WriteHeader(http.StatusBadRequest)
-				w.Write(FormatError("Unable to parse integer from 'from'" +
+				_, _ = w.Write(FormatError("Unable to parse integer from 'from'" +
 					" option."))
 				return
 			}
@@ -58,17 +58,17 @@ func GetPagesHandler(a *AppContext) http.Handler {
 		searchResults, err := a.Index.ExecuteSearch(search)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(FormatError("Unable to process your search query."))
+			_, _ = w.Write(FormatError("Unable to process your search query."))
 			return
 		}
 
 		j, err := json.Marshal(searchResults)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(FormatError("Unable to encode the response."))
+			_, _ = w.Write(FormatError("Unable to encode the response."))
 			return
 		}
-		w.Write(j)
+		_, _ = w.Write(j)
 
 	})
 
@@ -88,7 +88,7 @@ func GetPageHandler(a *AppContext) http.Handler {
 		// existing is not an error).
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(FormatError("The server encountered an error trying to " +
+			_, _ = w.Write(FormatError("The server encountered an error trying to " +
 				"load the requested page."))
 			return
 		}
@@ -96,7 +96,7 @@ func GetPageHandler(a *AppContext) http.Handler {
 		// Do this if the page doesn't exist
 		if pg == nil {
 			w.WriteHeader(http.StatusNotFound)
-			w.Write(FormatError("The page you requested could not be found."))
+			_, _ = w.Write(FormatError("The page you requested could not be found."))
 			return
 		}
 
@@ -138,18 +138,18 @@ func GetPageHandler(a *AppContext) http.Handler {
 			// Don't render the Markdown
 		default:
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write(FormatError("Unknown value in 'format' parameter."))
+			_, _ = w.Write(FormatError("Unknown value in 'format' parameter."))
 			return
 		}
 
 		j, err := json.Marshal(pg)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(FormatError("An error occurred occurred trying to format " +
+			_, _ = w.Write(FormatError("An error occurred occurred trying to format " +
 				"a response."))
 			return
 		}
-		w.Write(j)
+		_, _ = w.Write(j)
 
 	})
 
@@ -168,7 +168,7 @@ func PutPageHandler(a *AppContext) http.Handler {
 		err := decoder.Decode(pg)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write(FormatError("Unable to decode JSON request."))
+			_, _ = w.Write(FormatError("Unable to decode JSON request."))
 			log.Println(err)
 			return
 		}
@@ -177,7 +177,7 @@ func PutPageHandler(a *AppContext) http.Handler {
 		err = a.Store.UpdatePage(pg, vars["slug"])
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(FormatError("Unable to save page."))
+			_, _ = w.Write(FormatError("Unable to save page."))
 			return
 		}
 
@@ -185,7 +185,7 @@ func PutPageHandler(a *AppContext) http.Handler {
 		err = a.Index.IndexPage(vars["slug"], pg)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(FormatError("Unable to update search index."))
+			_, _ = w.Write(FormatError("Unable to update search index."))
 			return
 		}
 
@@ -204,14 +204,14 @@ func DeletePageHandler(a *AppContext) http.Handler {
 		err := a.Store.DeletePage(pageID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(FormatError("Unable to delete page."))
+			_, _ = w.Write(FormatError("Unable to delete page."))
 			return
 		}
 
 		err = a.Index.DeletePage(pageID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(FormatError("Unable to remove page from index."))
+			_, _ = w.Write(FormatError("Unable to remove page from index."))
 			return
 		}
 
@@ -235,14 +235,14 @@ func RenamePageHandler(a *AppContext) http.Handler {
 		if ok {
 			if len(newIDParam) != 1 {
 				w.WriteHeader(http.StatusBadRequest)
-				w.Write(FormatError("You must provide a single new page ID."))
+				_, _ = w.Write(FormatError("You must provide a single new page ID."))
 				return
 			} else {
 				newID = newIDParam[0]
 			}
 		} else {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write(FormatError("You must provide a new page ID."))
+			_, _ = w.Write(FormatError("You must provide a new page ID."))
 			return
 		}
 
@@ -251,7 +251,7 @@ func RenamePageHandler(a *AppContext) http.Handler {
 		if err != nil {
 			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(FormatError("Unable to rename page."))
+			_, _ = w.Write(FormatError("Unable to rename page."))
 			return
 		}
 
@@ -260,7 +260,7 @@ func RenamePageHandler(a *AppContext) http.Handler {
 		if err != nil {
 			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(FormatError("Unable to remove old page from index."))
+			_, _ = w.Write(FormatError("Unable to remove old page from index."))
 			return
 		}
 
@@ -269,14 +269,14 @@ func RenamePageHandler(a *AppContext) http.Handler {
 		if err != nil {
 			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(FormatError("Unable to update search index (1)."))
+			_, _ = w.Write(FormatError("Unable to update search index (1)."))
 			return
 		}
 		err = a.Index.IndexPage(newID, pg)
 		if err != nil {
 			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(FormatError("Unable to update search index (2)."))
+			_, _ = w.Write(FormatError("Unable to update search index (2)."))
 			return
 		}
 

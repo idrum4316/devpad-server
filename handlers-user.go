@@ -24,7 +24,7 @@ func GetAuthToken(a *AppContext) http.Handler {
 		err := decoder.Decode(&pd)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write(FormatError("Unable to decode JSON request."))
+			_, _ = w.Write(FormatError("Unable to decode JSON request."))
 			log.Println(err)
 			return
 		}
@@ -32,28 +32,28 @@ func GetAuthToken(a *AppContext) http.Handler {
 		u, err := a.Store.GetUser(pd.Username)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(FormatError("error accessing database"))
+			_, _ = w.Write(FormatError("error accessing database"))
 			log.Println(err)
 			return
 		}
 
 		if u == nil {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write(FormatError("Unable to find user."))
+			_, _ = w.Write(FormatError("Unable to find user."))
 			return
 		}
 
 		passwordMatches, err := u.VerifyPassword(pd.Password)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write(FormatError("Unable to authenticate request."))
+			_, _ = w.Write(FormatError("Unable to authenticate request."))
 			log.Println(err)
 			return
 		}
 
 		if !passwordMatches {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write(FormatError("Unable to authenticate request."))
+			_, _ = w.Write(FormatError("Unable to authenticate request."))
 			return
 		}
 
@@ -64,7 +64,7 @@ func GetAuthToken(a *AppContext) http.Handler {
 		tokenString, err := token.SignedString([]byte(a.Config.SigningKey))
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write(FormatError("Unable to sign token."))
+			_, _ = w.Write(FormatError("Unable to sign token."))
 			log.Println(err)
 			return
 		}
@@ -78,12 +78,12 @@ func GetAuthToken(a *AppContext) http.Handler {
 		responseJSON, err := json.Marshal(response)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(FormatError("unable to encode response"))
+			_, _ = w.Write(FormatError("unable to encode response"))
 			log.Println(err)
 			return
 		}
 
-		w.Write(responseJSON)
+		_, _ = w.Write(responseJSON)
 
 	})
 
@@ -98,7 +98,7 @@ func ChangePasswordHandler(a *AppContext) http.Handler {
 		userID, err := a.GetUserIDFromRequest(r)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write(FormatError("error parsing authentication token"))
+			_, _ = w.Write(FormatError("error parsing authentication token"))
 			log.Println(err)
 			return
 		}
@@ -114,7 +114,7 @@ func ChangePasswordHandler(a *AppContext) http.Handler {
 		err = decoder.Decode(&pd)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write(FormatError("Unable to decode JSON request."))
+			_, _ = w.Write(FormatError("Unable to decode JSON request."))
 			log.Println(err)
 			return
 		}
@@ -122,7 +122,7 @@ func ChangePasswordHandler(a *AppContext) http.Handler {
 		// Make sure both new passwords match
 		if pd.New != pd.Confirm {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write(FormatError("passwords do not match"))
+			_, _ = w.Write(FormatError("passwords do not match"))
 			return
 		}
 
@@ -130,7 +130,7 @@ func ChangePasswordHandler(a *AppContext) http.Handler {
 		u, err := a.Store.GetUser(userID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(FormatError("error accessing database"))
+			_, _ = w.Write(FormatError("error accessing database"))
 			log.Println(err)
 			return
 		}
@@ -139,12 +139,12 @@ func ChangePasswordHandler(a *AppContext) http.Handler {
 		currentPasswordMatches, err := u.VerifyPassword(pd.Current)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write(FormatError("could not verify current password"))
+			_, _ = w.Write(FormatError("could not verify current password"))
 			return
 		}
 		if !currentPasswordMatches {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write(FormatError("current password is not valid"))
+			_, _ = w.Write(FormatError("current password is not valid"))
 			return
 		}
 
@@ -152,7 +152,7 @@ func ChangePasswordHandler(a *AppContext) http.Handler {
 		err = u.SetPassword(pd.New)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(FormatError("unable to set new password"))
+			_, _ = w.Write(FormatError("unable to set new password"))
 			log.Println(err)
 			return
 		}
@@ -161,7 +161,7 @@ func ChangePasswordHandler(a *AppContext) http.Handler {
 		err = a.Store.UpdateUser(u)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(FormatError("unable to set new password"))
+			_, _ = w.Write(FormatError("unable to set new password"))
 			log.Println(err)
 			return
 		}
@@ -183,7 +183,7 @@ func CreateUserHandler(a *AppContext) http.Handler {
 		userID, err := a.GetUserIDFromRequest(r)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write(FormatError("error parsing authentication token"))
+			_, _ = w.Write(FormatError("error parsing authentication token"))
 			log.Println(err)
 			return
 		}
@@ -192,7 +192,7 @@ func CreateUserHandler(a *AppContext) http.Handler {
 		u, err := a.Store.GetUser(userID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(FormatError("error accessing database"))
+			_, _ = w.Write(FormatError("error accessing database"))
 			log.Println(err)
 			return
 		}
@@ -216,7 +216,7 @@ func CreateUserHandler(a *AppContext) http.Handler {
 		err = decoder.Decode(&pd)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write(FormatError("Unable to decode JSON request."))
+			_, _ = w.Write(FormatError("Unable to decode JSON request."))
 			log.Println(err)
 			return
 		}
@@ -224,7 +224,7 @@ func CreateUserHandler(a *AppContext) http.Handler {
 		// Make sure both new passwords match
 		if pd.Password != pd.Confirm {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write(FormatError("passwords do not match"))
+			_, _ = w.Write(FormatError("passwords do not match"))
 			return
 		}
 
@@ -238,7 +238,7 @@ func CreateUserHandler(a *AppContext) http.Handler {
 		err = newUser.SetPassword(pd.Password)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(FormatError("unable to set new password"))
+			_, _ = w.Write(FormatError("unable to set new password"))
 			log.Println(err)
 			return
 		}
@@ -247,7 +247,7 @@ func CreateUserHandler(a *AppContext) http.Handler {
 		err = a.Store.CreateUser(&newUser)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(FormatError("unable to set new password"))
+			_, _ = w.Write(FormatError("unable to set new password"))
 			log.Println(err)
 			return
 		}

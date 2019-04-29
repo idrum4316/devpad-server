@@ -22,12 +22,12 @@ func APIInfoHandler(a *AppContext) http.Handler {
 		j, err := json.Marshal(info)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(FormatError("The server encountered an error trying to " +
+			_, _ = w.Write(FormatError("The server encountered an error trying to " +
 				"encode the JSON response."))
 			return
 		}
 
-		w.Write(j)
+		_, _ = w.Write(j)
 
 		return
 
